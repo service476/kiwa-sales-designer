@@ -233,6 +233,27 @@ body.dev-mode [data-dev]{outline:1px dashed rgba(166,138,91,0.35);outline-offset
 body.dev-mode [data-dev]:hover{outline-color:rgba(166,138,91,1);outline-style:solid;outline-width:1.5px;z-index:5}
 body.dev-mode [data-dev]:hover::before{content:attr(data-dev);position:absolute;top:-18px;left:0;background:var(--amber);color:#fff;font-size:10px;font-family:ui-monospace,'SF Mono',Menlo,monospace;padding:2px 7px;border-radius:3px;white-space:nowrap;z-index:9999;pointer-events:none;font-weight:600;letter-spacing:0.03em;box-shadow:0 2px 4px rgba(0,0,0,0.4)}
 body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;padding:3px 9px;font-weight:700}
+
+/* ── Client Modal ── */
+.client-badge-btn{background:var(--amber-bg);color:var(--amber-lt);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--amber-dk);cursor:pointer;font-family:inherit;transition:all .15s}
+.client-badge-btn:hover{background:var(--amber-dk);border-color:var(--amber-lt)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:400px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-header{padding:16px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:14px;font-weight:600;color:var(--text-hi)}
+.modal-close{width:24px;height:24px;border-radius:4px;border:none;background:transparent;color:var(--text-2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;line-height:1}
+.modal-close:hover{background:var(--bg4);color:var(--text-hi)}
+.modal-body{flex:1;overflow-y:auto;padding:10px}
+.modal-footer{padding:10px;border-top:1px solid var(--border);flex-shrink:0}
+.client-item{display:flex;align-items:center;padding:10px 12px;border-radius:6px;cursor:pointer;gap:10px;border:1px solid transparent;transition:all .12s}
+.client-item:hover{background:var(--bg3);border-color:var(--border)}
+.client-item.active{background:var(--amber-bg);border-color:var(--amber-dk)}
+.client-info{flex:1;min-width:0}
+.client-name{font-size:13px;font-weight:600;color:var(--text-hi)}
+.client-meta{font-size:11px;color:var(--text-3);margin-top:2px}
+.client-delete{width:24px;height:24px;border-radius:4px;border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;flex-shrink:0}
+.client-item:hover .client-delete{opacity:1}
+.client-delete:hover{background:var(--red-bg);color:var(--red)}
 </style>
 </head>
 <body>
@@ -244,8 +265,9 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
   <span class="topbar-title">銷售頁設計工具 v1</span>
   <span class="dev-badge">DEV MODE · alt+D</span>
   <div class="topbar-client" data-dev="topbar.client">
-    <span class="client-badge" id="topClientName" data-dev="topbar.client-badge">小嶼好好 — 台灣高山烏龍茶</span>
+    <button class="client-badge-btn" id="topClientName" onclick="openClientModal()" data-dev="topbar.client-badge">小嶼好好 — 台灣高山烏龍茶</button>
     <div class="topbar-actions" data-dev="topbar.actions">
+      <button class="tb-btn" onclick="importJSON()" data-dev="btn.import">匯入草稿</button>
       <button class="tb-btn" onclick="exportJSON()" data-dev="btn.export">匯出草稿</button>
       <button class="tb-btn primary" onclick="window.print()" data-dev="btn.print">列印 PDF</button>
     </div>
@@ -313,6 +335,40 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
 
 <!-- Edit hint (shown when editing canvas text) -->
 <div class="edit-hint" id="editHint">ENTER 儲存 · ESC 取消 · SHIFT+ENTER 換行</div>
+
+<!-- Client Switcher Modal -->
+<div class="modal-overlay" id="clientModal" style="display:none" onclick="if(event.target===this)closeClientModal()" data-dev="modal.client">
+  <div class="modal" data-dev="modal.client-inner">
+    <div class="modal-header">
+      <span class="modal-title">客戶草稿</span>
+      <button class="modal-close" onclick="closeClientModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="clientListView">
+        <div id="clientList"></div>
+      </div>
+      <div id="newClientForm" style="display:none">
+        <div class="field" style="margin-bottom:12px">
+          <label>客戶名稱 <span style="color:var(--red)">*</span></label>
+          <input type="text" id="ncClientName" placeholder="例：漁讚水產"
+            onkeydown="if(event.key==='Enter')document.getElementById('ncProduct').focus()">
+        </div>
+        <div class="field" style="margin-bottom:16px">
+          <label>商品 / 服務名稱</label>
+          <input type="text" id="ncProduct" placeholder="例：新鮮野生漁獲（可空白）"
+            onkeydown="if(event.key==='Enter')confirmNewClient()">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="tb-btn" onclick="cancelNewClient()" style="flex:1">取消</button>
+          <button class="tb-btn primary" onclick="confirmNewClient()" style="flex:2">建立草稿</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" id="clientModalFooter">
+      <button class="tb-btn" onclick="showNewClientForm()" style="width:100%;padding:7px" data-dev="btn.new-client">＋ 新客戶草稿</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════════
@@ -463,6 +519,8 @@ let state = {
 //  INIT & RENDER
 // ══════════════════════════════════════════════
 function init(){
+  autoLoad();
+  updateClientBadge();
   renderScreenList();
   renderChecklist();
   selectScreen(state.currentId);
@@ -895,6 +953,7 @@ function saveCanvasEdit(screenId, path, value){
   }
   renderEditor();   // sync left/middle panel input boxes
   renderPreview();  // re-render preview (also re-renders this canvas)
+  autoSave();
 }
 
 // ── Thumb SVG for layout picker ──
@@ -932,6 +991,7 @@ function toggleCL(id){
   }));
   renderChecklist();
   updateChecklistProgress();
+  autoSave();
 }
 
 function updateChecklistProgress(){
@@ -954,6 +1014,7 @@ function update(key, val){
   renderPreview();
   // partial re-render for sliders (avoid full editor re-render which loses focus)
   if(key==='layout') { renderEditor(); renderPreview(); }
+  autoSave();
 }
 
 function updateItem(idx, key, val){
@@ -961,6 +1022,7 @@ function updateItem(idx, key, val){
   if(!s||!s.items[idx]) return;
   s.items[idx][key] = val;
   renderPreview();
+  autoSave();
 }
 
 function addItem(){
@@ -969,6 +1031,7 @@ function addItem(){
   s.items.push({icon:'✦', title:'新項目', desc:'描述文字'});
   renderEditor();
   renderPreview();
+  autoSave();
 }
 
 function addScreen(){
@@ -985,6 +1048,7 @@ function addScreen(){
     items:[], checked:false,
   });
   selectScreen(newId);
+  autoSave();
 }
 
 // ── Nav tabs ──
@@ -1041,6 +1105,259 @@ document.addEventListener('keydown', e=>{
     console.log(`[DEV MODE] ${on ? 'ON' : 'OFF'} — hover any element to see its data-dev name`);
   }
 });
+
+// ══════════════════════════════════════════════
+//  CLIENT MANAGEMENT & LOCALSTORAGE
+// ══════════════════════════════════════════════
+const LS_PREFIX = 'ksd-data-';
+const LS_INDEX_KEY = 'ksd-index';
+const LS_LAST_KEY = 'ksd-last';
+
+const DEFAULT_CHECKLIST = [
+  {group:'專案準備',items:[
+    {id:'cl1',text:'確認 Persona（一句話描述）',checked:false},
+    {id:'cl2',text:'廣告素材導流方向確認',checked:false},
+    {id:'cl3',text:'商品資料、圖片素材到位',checked:false},
+  ]},
+  {group:'文字架構',items:[
+    {id:'cl4',text:'版頭文案（一句特色 10 字以內）',checked:false},
+    {id:'cl5',text:'訴求文案（建立關聯，非功能列表）',checked:false},
+    {id:'cl6',text:'商品特色文案（3-5 個賣點）',checked:false},
+    {id:'cl7',text:'信任素材收集完成（認證/心得）',checked:false},
+    {id:'cl8',text:'收單文案（優惠方案明確）',checked:false},
+  ]},
+  {group:'設計規範',items:[
+    {id:'cl9',text:'版頭圖片質感 90% 心力投入',checked:false},
+    {id:'cl10',text:'點出問題圖片未出現自家產品',checked:false},
+    {id:'cl11',text:'競品比較用暗示，未露品牌名',checked:false},
+    {id:'cl12',text:'每屏資訊量在視覺承受範圍',checked:false},
+    {id:'cl13',text:'使用步驟不超過 5 步',checked:false},
+  ]},
+  {group:'產出確認',items:[
+    {id:'cl14',text:'廣告到版頭訊息一致（不斷訊）',checked:false},
+    {id:'cl15',text:'手機版確認：文字可讀不裁切',checked:false},
+    {id:'cl16',text:'客戶審稿通過',checked:false},
+    {id:'cl17',text:'上架確認頁面顯示正常',checked:false},
+  ]},
+];
+
+// ── Auto save (debounced 600ms) ──
+let _saveTimer;
+function autoSave(){
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(_doSave, 600);
+}
+function _doSave(){
+  if(!state.client) return;
+  try {
+    localStorage.setItem(LS_PREFIX + state.client, JSON.stringify(state));
+    let index = getClientIndex();
+    const ex = index.find(c=>c.name===state.client);
+    if(ex){
+      ex.lastModified = Date.now();
+      ex.screenCount = state.screens.length;
+      ex.product = state.product || '';
+    } else {
+      index.push({name:state.client, product:state.product||'', lastModified:Date.now(), screenCount:state.screens.length});
+    }
+    localStorage.setItem(LS_INDEX_KEY, JSON.stringify(index));
+    localStorage.setItem(LS_LAST_KEY, state.client);
+  } catch(e){ console.warn('autoSave failed', e); }
+}
+
+function getClientIndex(){
+  try{ return JSON.parse(localStorage.getItem(LS_INDEX_KEY)) || []; } catch(e){ return []; }
+}
+
+// ── Load last session on startup ──
+function autoLoad(){
+  const last = localStorage.getItem(LS_LAST_KEY);
+  if(!last){ _doSave(); return; }
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_PREFIX + last));
+    if(saved && saved.screens && saved.screens.length){
+      Object.assign(state, saved);
+      state.showAll = false;
+      if(!state.screens.find(s=>s.id===state.currentId)) state.currentId = state.screens[0].id;
+      if(!state.checklist) state.checklist = JSON.parse(JSON.stringify(DEFAULT_CHECKLIST));
+    }
+  } catch(e){ console.warn('autoLoad failed', e); _doSave(); }
+}
+
+// ── Update topbar badge text ──
+function updateClientBadge(){
+  const b = document.getElementById('topClientName');
+  if(b) b.textContent = state.client + (state.product ? ' — ' + state.product : '');
+}
+
+// ── Empty 5-screen template for new clients ──
+function makeEmptyTemplate(name, product){
+  return {
+    client: name, product: product || '',
+    currentId: 1, showAll: false,
+    screens: [
+      {id:1, layer:'L1', name:'版頭', layout:'single',
+       headline:'', headlineSize:88, headlineAlign:'center', headlineColor:'#1A1A18',
+       body:'', bodySize:28, bodyAlign:'center', bodyColor:'#5A5A52',
+       subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+       bgColor:'#F5F0E8', accentColor:'#A68A5B', imageHint:'', items:[], checked:false},
+      {id:2, layer:'L2', name:'訴求', layout:'single',
+       headline:'', headlineSize:72, headlineAlign:'center', headlineColor:'#FFFFFF',
+       body:'', bodySize:28, bodyAlign:'center', bodyColor:'rgba(255,255,255,0.75)',
+       subtext:'', subtextSize:18, subtextColor:'rgba(255,255,255,0.5)',
+       bgColor:'#2C3A2A', accentColor:'#A68A5B', imageHint:'', items:[], checked:false},
+      {id:3, layer:'L3', name:'商品特色', layout:'three-point',
+       headline:'', headlineSize:60, headlineAlign:'center', headlineColor:'#1A1A18',
+       body:'', bodySize:22, bodyAlign:'center', bodyColor:'#5A5A52',
+       subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+       bgColor:'#FAFAF7', accentColor:'#A68A5B', imageHint:'',
+       items:[{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''}],
+       checked:false},
+      {id:4, layer:'L4', name:'信任', layout:'single',
+       headline:'', headlineSize:64, headlineAlign:'center', headlineColor:'#1A1A18',
+       body:'', bodySize:24, bodyAlign:'center', bodyColor:'#5A5A52',
+       subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+       bgColor:'#FAFAF7', accentColor:'#A68A5B', imageHint:'', items:[], checked:false},
+      {id:5, layer:'L5', name:'收單', layout:'single',
+       headline:'', headlineSize:80, headlineAlign:'center', headlineColor:'#FFFFFF',
+       body:'', bodySize:26, bodyAlign:'center', bodyColor:'rgba(255,255,255,0.85)',
+       subtext:'', subtextSize:18, subtextColor:'rgba(255,255,255,0.55)',
+       bgColor:'#2C3A2A', accentColor:'#A68A5B', imageHint:'', items:[], checked:false},
+    ],
+    checklist: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST)),
+  };
+}
+
+// ── Load a saved client ──
+function loadClient(name){
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_PREFIX + name));
+    if(saved && saved.screens && saved.screens.length){
+      Object.assign(state, saved);
+      state.showAll = false;
+      if(!state.screens.find(s=>s.id===state.currentId)) state.currentId = state.screens[0].id;
+      if(!state.checklist) state.checklist = JSON.parse(JSON.stringify(DEFAULT_CHECKLIST));
+      updateClientBadge();
+      renderScreenList();
+      renderChecklist();
+      selectScreen(state.currentId);
+      updateChecklistProgress();
+      closeClientModal();
+    }
+  } catch(e){ console.error('loadClient failed', e); }
+}
+
+// ── Create new client from empty template ──
+function newClient(name, product){
+  const tpl = makeEmptyTemplate(name, product);
+  Object.assign(state, tpl);
+  _doSave();
+  updateClientBadge();
+  renderScreenList();
+  renderChecklist();
+  selectScreen(state.currentId);
+  updateChecklistProgress();
+  closeClientModal();
+}
+
+// ── Delete a saved client ──
+function deleteClient(name){
+  localStorage.removeItem(LS_PREFIX + name);
+  const remaining = getClientIndex().filter(c=>c.name!==name);
+  localStorage.setItem(LS_INDEX_KEY, JSON.stringify(remaining));
+  if(state.client === name && remaining.length){
+    loadClient(remaining.slice().sort((a,b)=>b.lastModified-a.lastModified)[0].name);
+    return;
+  }
+  renderClientModal();
+}
+
+// ── Import JSON draft ──
+function importJSON(){
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if(data.screens && data.client){
+          Object.assign(state, data);
+          state.showAll = false;
+          if(!state.screens.find(s=>s.id===state.currentId)) state.currentId = state.screens[0].id;
+          if(!state.checklist) state.checklist = JSON.parse(JSON.stringify(DEFAULT_CHECKLIST));
+          _doSave();
+          updateClientBadge();
+          renderScreenList();
+          renderChecklist();
+          selectScreen(state.currentId);
+          updateChecklistProgress();
+        } else { alert('無效的草稿格式'); }
+      } catch(e){ alert('檔案解析失敗'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ── Modal controls ──
+function openClientModal(){
+  renderClientModal();
+  document.getElementById('clientModal').style.display = 'flex';
+}
+function closeClientModal(){
+  const m = document.getElementById('clientModal');
+  if(m) m.style.display = 'none';
+  // reset to list view
+  const lv = document.getElementById('clientListView');
+  const nf = document.getElementById('newClientForm');
+  const ft = document.getElementById('clientModalFooter');
+  if(lv) lv.style.display = 'block';
+  if(nf) nf.style.display = 'none';
+  if(ft) ft.style.display = 'block';
+}
+function showNewClientForm(){
+  document.getElementById('clientListView').style.display = 'none';
+  document.getElementById('newClientForm').style.display = 'block';
+  document.getElementById('clientModalFooter').style.display = 'none';
+  setTimeout(()=>document.getElementById('ncClientName')?.focus(), 50);
+}
+function cancelNewClient(){
+  document.getElementById('newClientForm').style.display = 'none';
+  document.getElementById('clientListView').style.display = 'block';
+  document.getElementById('clientModalFooter').style.display = 'block';
+}
+function confirmNewClient(){
+  const nameInput = document.getElementById('ncClientName');
+  const name = nameInput.value.trim();
+  const product = document.getElementById('ncProduct').value.trim();
+  if(!name){ nameInput.style.borderColor = 'var(--red)'; nameInput.focus(); return; }
+  nameInput.style.borderColor = '';
+  newClient(name, product);
+}
+function renderClientModal(){
+  const list = document.getElementById('clientList');
+  if(!list) return;
+  const index = getClientIndex().slice().sort((a,b)=>b.lastModified-a.lastModified);
+  if(!index.length){
+    list.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--text-3);font-size:12px">尚無儲存的客戶草稿</div>';
+    return;
+  }
+  list.innerHTML = index.map(c=>{
+    const active = c.name === state.client;
+    const d = new Date(c.lastModified);
+    const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<div class="client-item${active?' active':''}" onclick="loadClient('${esc(c.name)}')">
+      <div class="client-info">
+        <div class="client-name">${esc(c.name)}${c.product ? ` <span style="font-weight:400;color:var(--text-2);font-size:11px">— ${esc(c.product)}</span>` : ''}</div>
+        <div class="client-meta">${c.screenCount} 個分屏 · ${dateStr}</div>
+      </div>
+      <button class="client-delete" onclick="event.stopPropagation();deleteClient('${esc(c.name)}')" title="刪除草稿">✕</button>
+    </div>`;
+  }).join('');
+}
 
 // ── Start ──
 init();
