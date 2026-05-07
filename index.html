@@ -281,6 +281,7 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
   <div class="panel-nav-tabs" data-dev="nav.tabs">
     <div class="nav-tab active" id="tab-screens" onclick="switchNavTab('screens')" data-dev="nav.tab.screens">分屏</div>
     <div class="nav-tab" id="tab-checklist" onclick="switchNavTab('checklist')" data-dev="nav.tab.checklist">檢核</div>
+    <div class="nav-tab" id="tab-brief" onclick="switchNavTab('brief')" data-dev="nav.tab.brief">簡報</div>
   </div>
 
   <!-- Screens list -->
@@ -292,6 +293,20 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
   <!-- Checklist -->
   <div class="nav-content" id="nav-checklist" style="display:none" data-dev="nav.checklist">
     <div id="checklistContent"></div>
+  </div>
+
+  <!-- Brief -->
+  <div class="nav-content" id="nav-brief" style="display:none" data-dev="nav.brief">
+    <div style="padding:12px 12px 8px">
+      <div style="font-size:11px;color:var(--text-3);line-height:1.7;margin-bottom:12px">
+        先填完策略簡報，再點「生成草稿」。<br>
+        填好的文案會自動帶入 5 個分屏。
+      </div>
+      <button onclick="generateScreensFromBrief()" class="tb-btn primary" style="width:100%;padding:8px;font-size:12px" data-dev="btn.generate">
+        生成分屏草稿 →
+      </button>
+      <div style="font-size:10px;color:var(--text-3);text-align:center;margin-top:6px">現有分屏將被覆蓋</div>
+    </div>
   </div>
 
   <div class="cl-progress" data-dev="nav.progress">
@@ -513,6 +528,14 @@ let state = {
       {id:'cl17',text:'上架確認頁面顯示正常',checked:false},
     ]},
   ],
+  brief: {
+    persona:'', trafficSource:'', conversionGoal:'',
+    l1Type:'visual', l1Headline:'', l1SubHead:'', l1ImageHint:'',
+    l2Type:'scene', l2Headline:'', l2Copy:'', l2ImageHint:'',
+    l3Items:[{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''}],
+    l4Type:'cert', l4Headline:'', l4Copy:'',
+    l5Offer:'', l5Price:'', l5OrigPrice:'', l5ImageHint:'',
+  },
 };
 
 // ══════════════════════════════════════════════
@@ -1053,10 +1076,14 @@ function addScreen(){
 
 // ── Nav tabs ──
 function switchNavTab(tab){
-  document.getElementById('nav-screens').style.display = tab==='screens'?'block':'none';
-  document.getElementById('nav-checklist').style.display = tab==='checklist'?'block':'none';
-  document.getElementById('tab-screens').className = `nav-tab${tab==='screens'?' active':''}`;
-  document.getElementById('tab-checklist').className = `nav-tab${tab==='checklist'?' active':''}`;
+  ['screens','checklist','brief'].forEach(t=>{
+    const nc = document.getElementById('nav-'+t);
+    const nt = document.getElementById('tab-'+t);
+    if(nc) nc.style.display = t===tab?'block':'none';
+    if(nt) nt.className = `nav-tab${t===tab?' active':''}`;
+  });
+  if(tab==='brief') renderBriefEditor();
+  else renderEditor();
 }
 
 // ── Preview nav ──
@@ -1105,6 +1132,234 @@ document.addEventListener('keydown', e=>{
     console.log(`[DEV MODE] ${on ? 'ON' : 'OFF'} — hover any element to see its data-dev name`);
   }
 });
+
+// ══════════════════════════════════════════════
+//  BRIEF — 策略簡報 + 生成分屏
+// ══════════════════════════════════════════════
+function emptyBrief(){
+  return {
+    persona:'', trafficSource:'', conversionGoal:'',
+    l1Type:'visual', l1Headline:'', l1SubHead:'', l1ImageHint:'',
+    l2Type:'scene', l2Headline:'', l2Copy:'', l2ImageHint:'',
+    l3Items:[{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''}],
+    l4Type:'cert', l4Headline:'', l4Copy:'',
+    l5Offer:'', l5Price:'', l5OrigPrice:'', l5ImageHint:'',
+  };
+}
+
+function updateBrief(key, val){
+  if(!state.brief) state.brief = emptyBrief();
+  state.brief[key] = val;
+  autoSave();
+}
+
+function updateBriefItem(arr, idx, key, val){
+  if(!state.brief) state.brief = emptyBrief();
+  if(!state.brief[arr]) state.brief[arr] = [];
+  if(!state.brief[arr][idx]) state.brief[arr][idx] = {icon:'✦',title:'',desc:''};
+  state.brief[arr][idx][key] = val;
+  autoSave();
+}
+
+function addBriefL3Item(){
+  if(!state.brief) state.brief = emptyBrief();
+  if(!state.brief.l3Items) state.brief.l3Items = [];
+  state.brief.l3Items.push({icon:'✦',title:'',desc:''});
+  renderBriefEditor();
+  autoSave();
+}
+
+function renderBriefEditor(){
+  const b = state.brief || emptyBrief();
+  const badge = document.getElementById('editorLayerBadge');
+  if(badge){ badge.textContent = 'BRIEF'; badge.className = 'editor-layer-badge'; badge.style.cssText='background:#444;color:#aaa;font-size:10px'; }
+  const nameEl = document.getElementById('editorScreenName');
+  if(nameEl) nameEl.textContent = state.client + ' — 策略簡報';
+
+  const convOpts = ['直接購買','加入購物車','填表詢問','加 LINE','預約諮詢'].map(o=>
+    `<option${b.conversionGoal===o?' selected':''}>${o}</option>`).join('');
+
+  const pill = (val, cur, label, field) =>
+    `<button class="pnav-btn" onclick="updateBrief('${field}','${val}');renderBriefEditor()"
+      style="${cur===val?'border-color:var(--amber);color:var(--amber);background:var(--amber-bg)':''}">${label}</button>`;
+
+  document.getElementById('editorBody').innerHTML = `
+    <div class="e-section"><div class="e-section-title">目標資料</div></div>
+    <div class="field" data-dev="field.brief-persona"><label>目標受眾（一句話）</label>
+      <input type="text" placeholder="例：家有幼兒、在意成分安全的 30-45 歲媽媽" value="${esc(b.persona)}" oninput="updateBrief('persona',this.value)">
+    </div>
+    <div class="field-row">
+      <div class="field" data-dev="field.brief-traffic"><label>廣告入口訊息</label>
+        <input type="text" placeholder="例：FB 廣告「刺鼻清潔劑不想用了」" value="${esc(b.trafficSource)}" oninput="updateBrief('trafficSource',this.value)">
+      </div>
+      <div class="field" data-dev="field.brief-goal"><label>轉換目標</label>
+        <select onchange="updateBrief('conversionGoal',this.value)"><option value="">選擇...</option>${convOpts}</select>
+      </div>
+    </div>
+
+    <div class="e-section"><div class="e-section-title" style="color:#E8944A">L1 版頭</div></div>
+    <div class="field"><label>版頭類型</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+        ${pill('visual', b.l1Type, '主視覺型', 'l1Type')}
+        ${pill('offer',  b.l1Type, '優惠型',   'l1Type')}
+        ${pill('claim',  b.l1Type, '訴求型',   'l1Type')}
+      </div>
+    </div>
+    <div class="field"><label>主標文案</label>
+      <textarea rows="2" placeholder="例：純粹台灣茶，手工採摘無農藥" oninput="updateBrief('l1Headline',this.value)">${esc(b.l1Headline)}</textarea>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>副標 / 內文</label>
+        <input type="text" placeholder="例：海拔 1200m 高山烏龍" value="${esc(b.l1SubHead)}" oninput="updateBrief('l1SubHead',this.value)">
+      </div>
+      <div class="field"><label>圖片需求</label>
+        <input type="text" placeholder="例：茶園俯拍，晨霧自然光" value="${esc(b.l1ImageHint)}" oninput="updateBrief('l1ImageHint',this.value)">
+      </div>
+    </div>
+
+    <div class="e-section"><div class="e-section-title" style="color:#5AAFEE">L2 訴求</div></div>
+    <div class="field"><label>訴求類型</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+        ${pill('problem', b.l2Type, '點出問題', 'l2Type')}
+        ${pill('desire',  b.l2Type, '心理渴望', 'l2Type')}
+        ${pill('scene',   b.l2Type, '情境法',   'l2Type')}
+      </div>
+    </div>
+    <div class="field"><label>標題（主標）</label>
+      <input type="text" placeholder="例：在喧囂的城市裡，找一個只屬於你的時刻" value="${esc(b.l2Headline)}" oninput="updateBrief('l2Headline',this.value)">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>訴求文案（副標）</label>
+        <input type="text" placeholder="例：泡一杯，讓思緒慢下來" value="${esc(b.l2Copy)}" oninput="updateBrief('l2Copy',this.value)">
+      </div>
+      <div class="field"><label>圖片需求</label>
+        <input type="text" placeholder="例：窗邊光影，電影感構圖" value="${esc(b.l2ImageHint)}" oninput="updateBrief('l2ImageHint',this.value)">
+      </div>
+    </div>
+
+    <div class="e-section"><div class="e-section-title" style="color:#5DC98A">L3 商品特色（3-5 個賣點）</div></div>
+    ${(b.l3Items||[]).map((item,i)=>`
+      <div style="background:var(--bg3);border-radius:6px;padding:10px;margin-bottom:8px;border:1px solid var(--border)" data-dev="brief.l3item[${i}]">
+        <div class="field-row" style="margin-bottom:6px">
+          <div class="field" style="margin:0"><label>Emoji / 圖示</label>
+            <input type="text" value="${esc(item.icon)}" oninput="updateBriefItem('l3Items',${i},'icon',this.value)" style="font-size:18px;text-align:center">
+          </div>
+          <div class="field" style="margin:0"><label>賣點標題</label>
+            <input type="text" value="${esc(item.title)}" oninput="updateBriefItem('l3Items',${i},'title',this.value)" placeholder="例：手工採摘">
+          </div>
+        </div>
+        <div class="field" style="margin:0"><label>說明文字</label>
+          <input type="text" value="${esc(item.desc)}" oninput="updateBriefItem('l3Items',${i},'desc',this.value)" placeholder="例：每年春冬兩季，老師傅一芯二葉">
+        </div>
+      </div>`).join('')}
+    <div class="add-screen-btn" onclick="addBriefL3Item()" style="margin:0 0 14px">+ 新增賣點</div>
+
+    <div class="e-section"><div class="e-section-title" style="color:#A87ADE">L4 信任</div></div>
+    <div class="field"><label>信任類型</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+        ${pill('cert',   b.l4Type, '認證證書', 'l4Type')}
+        ${pill('kol',    b.l4Type, 'KOL 心得', 'l4Type')}
+        ${pill('review', b.l4Type, '素人評論', 'l4Type')}
+      </div>
+    </div>
+    <div class="field"><label>信任標題</label>
+      <input type="text" placeholder="例：SGS 認證，用數據說話" value="${esc(b.l4Headline)}" oninput="updateBrief('l4Headline',this.value)">
+    </div>
+    <div class="field"><label>信任文案</label>
+      <textarea rows="2" placeholder="例：290 項農藥殘留全數 ND" oninput="updateBrief('l4Copy',this.value)">${esc(b.l4Copy)}</textarea>
+    </div>
+
+    <div class="e-section"><div class="e-section-title" style="color:#E87878">L5 收單</div></div>
+    <div class="field"><label>方案 / 主標</label>
+      <input type="text" placeholder="例：三入組限時特惠，買茶再送品茗杯" value="${esc(b.l5Offer)}" oninput="updateBrief('l5Offer',this.value)">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>售價</label>
+        <input type="text" placeholder="例：$890" value="${esc(b.l5Price)}" oninput="updateBrief('l5Price',this.value)">
+      </div>
+      <div class="field"><label>原價（可空白）</label>
+        <input type="text" placeholder="例：$1,170" value="${esc(b.l5OrigPrice)}" oninput="updateBrief('l5OrigPrice',this.value)">
+      </div>
+    </div>
+    <div class="field"><label>圖片需求</label>
+      <input type="text" placeholder="例：三包茶葉 + 品茗杯平鋪俯拍" value="${esc(b.l5ImageHint)}" oninput="updateBrief('l5ImageHint',this.value)">
+    </div>
+
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <button onclick="generateScreensFromBrief()" class="tb-btn primary" style="width:100%;padding:10px;font-size:13px" data-dev="btn.generate-editor">
+        生成分屏草稿 →
+      </button>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:8px">
+        自動產生 5 個分屏，帶入你填的文案，現有分屏將被覆蓋。
+      </div>
+    </div>
+  `;
+}
+
+function generateScreensFromBrief(){
+  const b = state.brief || emptyBrief();
+  const screens = [];
+  let id = 1;
+
+  // L1 版頭
+  screens.push({
+    id:id++, layer:'L1', name:'版頭', layout:'single',
+    headline: b.l1Headline||'', headlineSize:88, headlineAlign:'center', headlineColor:'#1A1A18',
+    body: b.l1SubHead||'', bodySize:28, bodyAlign:'center', bodyColor:'#5A5A52',
+    subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+    bgColor:'#F5F0E8', accentColor:'#A68A5B', imageHint: b.l1ImageHint||'', items:[], checked:false,
+  });
+
+  // L2 訴求（深色背景）
+  screens.push({
+    id:id++, layer:'L2', name:'訴求', layout:'single',
+    headline: b.l2Headline||'', headlineSize:72, headlineAlign:'center', headlineColor:'#FFFFFF',
+    body: b.l2Copy||'', bodySize:28, bodyAlign:'center', bodyColor:'rgba(255,255,255,0.75)',
+    subtext:'', subtextSize:18, subtextColor:'rgba(255,255,255,0.5)',
+    bgColor:'#2C3A2A', accentColor:'#A68A5B', imageHint: b.l2ImageHint||'', items:[], checked:false,
+  });
+
+  // L3 商品特色
+  const l3 = (b.l3Items||[]).filter(i=>i.title||i.desc);
+  screens.push({
+    id:id++, layer:'L3', name:'商品特色', layout: l3.length>0 ? 'three-point' : 'single',
+    headline: '為什麼選' + (state.client||'我們'),
+    headlineSize:60, headlineAlign:'center', headlineColor:'#1A1A18',
+    body:'', bodySize:22, bodyAlign:'center', bodyColor:'#5A5A52',
+    subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+    bgColor:'#FAFAF7', accentColor:'#A68A5B', imageHint:'',
+    items: l3.slice(0,3).map(i=>({...i})), checked:false,
+  });
+
+  // L4 信任
+  screens.push({
+    id:id++, layer:'L4', name:'信任', layout: b.l4Type==='review' ? 'grid' : 'single',
+    headline: b.l4Headline||'', headlineSize:64, headlineAlign:'center', headlineColor:'#1A1A18',
+    body: b.l4Copy||'', bodySize:24, bodyAlign:'center', bodyColor:'#5A5A52',
+    subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+    bgColor:'#FAFAF7', accentColor:'#A68A5B', imageHint:'', items:[], checked:false,
+  });
+
+  // L5 收單
+  const priceLine = [
+    b.l5OrigPrice ? '原價 ' + b.l5OrigPrice : '',
+    b.l5Price     ? '現在只要 ' + b.l5Price   : '',
+  ].filter(Boolean).join('，');
+  screens.push({
+    id:id++, layer:'L5', name:'收單', layout:'single',
+    headline: b.l5Offer||'', headlineSize:80, headlineAlign:'center', headlineColor:'#FFFFFF',
+    body: priceLine, bodySize:26, bodyAlign:'center', bodyColor:'rgba(255,255,255,0.85)',
+    subtext:'', subtextSize:18, subtextColor:'rgba(255,255,255,0.55)',
+    bgColor:'#2C3A2A', accentColor:'#A68A5B', imageHint: b.l5ImageHint||'', items:[], checked:false,
+  });
+
+  state.screens = screens;
+  state.currentId = 1;
+  autoSave();
+  switchNavTab('screens');
+  renderScreenList();
+  selectScreen(1);
+}
 
 // ══════════════════════════════════════════════
 //  CLIENT MANAGEMENT & LOCALSTORAGE
@@ -1225,6 +1480,14 @@ function makeEmptyTemplate(name, product){
        bgColor:'#2C3A2A', accentColor:'#A68A5B', imageHint:'', items:[], checked:false},
     ],
     checklist: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST)),
+    brief: {
+      persona:'', trafficSource:'', conversionGoal:'',
+      l1Type:'visual', l1Headline:'', l1SubHead:'', l1ImageHint:'',
+      l2Type:'scene', l2Headline:'', l2Copy:'', l2ImageHint:'',
+      l3Items:[{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''},{icon:'✦',title:'',desc:''}],
+      l4Type:'cert', l4Headline:'', l4Copy:'',
+      l5Offer:'', l5Price:'', l5OrigPrice:'', l5ImageHint:'',
+    },
   };
 }
 
@@ -1258,6 +1521,8 @@ function newClient(name, product){
   selectScreen(state.currentId);
   updateChecklistProgress();
   closeClientModal();
+  // 新客戶直接跳 Brief 填策略
+  setTimeout(()=>switchNavTab('brief'), 50);
 }
 
 // ── Delete a saved client ──
