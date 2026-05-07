@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銷售頁設計工具 — Kiwa Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1E1E1E;--bg2:#252526;--bg3:#2D2D30;--bg4:#3C3C3F;
+  --border:#404040;--border-lt:#555;
+  --amber:#A68A5B;--amber-lt:#C4A97A;--amber-dk:#7D6540;--amber-bg:#2A2318;
+  --text:#CCCCCC;--text-2:#888;--text-3:#555;--text-hi:#E8E8E8;
+  --green:#4CAF7D;--green-bg:#1A2E22;
+  --blue:#4A9EE8;--blue-bg:#1A2535;
+  --red:#E86B5F;--red-bg:#2E1A1A;
+  --accent-warm:#F5F0E8;--accent-bg:#FAFAF7;
+  --panel-l:220px;--panel-m:420px;
+  --topbar:40px;
+}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;font-size:13px;background:var(--bg);color:var(--text)}
+
+/* ── App shell ── */
+.app{display:flex;flex-direction:column;height:100vh}
+.topbar{height:var(--topbar);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;user-select:none}
+.topbar-brand{font-weight:700;font-size:13px;color:var(--amber);letter-spacing:0.06em}
+.topbar-title{font-size:12px;color:var(--text-2);margin-left:4px}
+.topbar-client{margin-left:auto;display:flex;align-items:center;gap:8px}
+.client-badge{background:var(--amber-bg);color:var(--amber-lt);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--amber-dk)}
+.topbar-actions{display:flex;gap:6px;margin-left:8px}
+.tb-btn{padding:4px 12px;border-radius:4px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:all .15s}
+.tb-btn:hover{border-color:var(--amber);color:var(--amber)}
+.tb-btn.primary{background:var(--amber);color:#fff;border-color:var(--amber)}
+.tb-btn.primary:hover{background:var(--amber-lt)}
+
+.panels{display:flex;flex:1;overflow:hidden}
+
+/* ── Panel 1: Navigator ── */
+.panel-nav{width:var(--panel-l);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.panel-nav-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.nav-tab{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:0.04em;text-transform:uppercase}
+.nav-tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+.nav-content{flex:1;overflow-y:auto;padding:8px 0}
+
+/* Screen list */
+.screen-item{padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-left:2px solid transparent;transition:all .12s;border-radius:0}
+.screen-item:hover{background:var(--bg3);color:var(--text-hi)}
+.screen-item.active{background:var(--bg4);border-left-color:var(--amber);color:var(--text-hi)}
+.screen-item .s-num{width:18px;height:18px;border-radius:3px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.screen-item .s-name{font-size:11px;line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.screen-item .s-check{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--text-3);flex-shrink:0}
+.screen-item.done .s-check{background:var(--green);border-color:var(--green)}
+.add-screen-btn{margin:8px 12px 4px;padding:6px;border:1.5px dashed var(--border);border-radius:5px;text-align:center;font-size:11px;color:var(--text-3);cursor:pointer;transition:all .15s}
+.add-screen-btn:hover{border-color:var(--amber);color:var(--amber)}
+
+/* Layer badge colors */
+.lb-1{background:#3D2810;color:#E8944A}
+.lb-2{background:#1A2535;color:#5AAFEE}
+.lb-3{background:#1A2E22;color:#5DC98A}
+.lb-4{background:#261A3D;color:#A87ADE}
+.lb-5{background:#2E1A1A;color:#E87878}
+
+/* Checklist */
+.cl-group{margin-bottom:2px}
+.cl-group-header{padding:6px 12px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px}
+.cl-group-header:hover{color:var(--text-2)}
+.cl-items{padding:0 8px 4px}
+.cl-item{display:flex;align-items:flex-start;gap:7px;padding:5px 4px;border-radius:4px;cursor:pointer}
+.cl-item:hover{background:var(--bg3)}
+.cl-item input[type=checkbox]{accent-color:var(--amber);margin-top:1px;flex-shrink:0;cursor:pointer}
+.cl-item label{font-size:11px;color:var(--text-2);line-height:1.4;cursor:pointer}
+.cl-item.checked label{color:var(--text-3);text-decoration:line-through}
+.cl-progress{padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0}
+.cl-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:4px}
+.cl-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .3s}
+.cl-pct{font-size:10px;color:var(--text-3);display:flex;justify-content:space-between;margin-top:3px}
+
+/* ── Panel 2: Editor ── */
+.panel-editor{width:var(--panel-m);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.editor-header{padding:12px 16px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.editor-screen-title{font-size:14px;font-weight:600;color:var(--text-hi);display:flex;align-items:center;gap:8px}
+.editor-layer-badge{padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700}
+.editor-body{flex:1;overflow-y:auto;padding:16px}
+
+/* Form fields */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text-2);text-transform:none;letter-spacing:0.02em;margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:inherit;font-size:12px;color:var(--text-hi);outline:none;transition:border-color .15s;resize:vertical}
+.field textarea{min-height:60px;line-height:1.5}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--amber)}
+.field select option{background:var(--bg3)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* Slider */
+.slider-wrap{display:flex;align-items:center;gap:8px}
+.slider-wrap input[type=range]{flex:1;accent-color:var(--amber);cursor:pointer}
+.slider-val{font-size:11px;color:var(--amber);font-weight:600;min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* Layout picker */
+.layout-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.lp-opt{border:1.5px solid var(--border);border-radius:5px;padding:8px 4px 6px;cursor:pointer;text-align:center;transition:all .15s}
+.lp-opt:hover{border-color:var(--border-lt)}
+.lp-opt.active{border-color:var(--amber);background:var(--amber-bg)}
+.lp-thumb{height:32px;display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:4px}
+.lt-block{background:var(--bg4);border-radius:2px}
+.lp-name{font-size:10px;color:var(--text-3)}
+.lp-opt.active .lp-name{color:var(--amber-lt)}
+
+/* Color row */
+.color-row{display:flex;gap:6px;flex-wrap:wrap}
+.color-swatch{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
+.color-swatch.active{border-color:var(--text-hi);transform:scale(1.15)}
+.color-input{width:32px;height:24px;border-radius:4px;cursor:pointer;border:1px solid var(--border);padding:0;background:transparent}
+
+/* Align buttons */
+.align-btns{display:flex;gap:4px}
+.align-btn{width:28px;height:24px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:11px;transition:all .12s}
+.align-btn:hover{border-color:var(--border-lt);color:var(--text)}
+.align-btn.active{border-color:var(--amber);background:var(--amber-bg);color:var(--amber-lt)}
+
+/* Section divider in editor */
+.e-section{margin-bottom:4px}
+.e-section-title{font-size:13px;font-weight:700;color:var(--amber-lt);text-transform:none;letter-spacing:0.02em;padding:14px 0 10px;border-top:1px solid var(--border);margin-top:12px;display:flex;align-items:center;gap:8px}
+.e-section-title::before{content:'';width:3px;height:15px;background:var(--amber);border-radius:2px;flex-shrink:0}
+.e-section:first-child .e-section-title{border-top:none;margin-top:0;padding-top:0}
+
+/* ── Panel 3: Preview ── */
+.panel-preview{flex:1;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;min-width:300px}
+.preview-header{height:36px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
+.preview-title{font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.preview-size{font-size:10px;color:var(--text-3);margin-left:auto;font-variant-numeric:tabular-nums}
+.preview-nav{display:flex;gap:4px}
+.pnav-btn{padding:2px 8px;border-radius:3px;font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text-2);cursor:pointer;font-family:inherit;transition:all .12s}
+.pnav-btn:hover{border-color:var(--amber);color:var(--amber)}
+.preview-body{flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:20px;position:relative}
+.preview-body.single-mode{align-items:center;overflow:hidden}
+.preview-scroll{display:flex;gap:20px;align-items:center;padding:4px}
+.preview-scroll.vertical{flex-direction:column;align-items:center;gap:32px;width:100%;padding:8px 4px 40px}
+.preview-scroll.vertical .canvas-wrap{flex-direction:column;align-items:center}
+
+/* Canvas wrapper */
+.canvas-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+.canvas-label{font-size:11px;color:var(--text);text-align:center;font-variant-numeric:tabular-nums;line-height:1.5;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.canvas-label .cl-num{color:var(--text-3);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.canvas-label .cl-layer{display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.04em}
+.canvas-label .cl-name{color:var(--text);font-size:11px}
+.canvas{position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.5);flex-shrink:0}
+.canvas-inner{width:1080px;height:1080px;position:relative;transform-origin:top left}
+
+/* Vertical mode: label on left, canvases stacked tight */
+.preview-scroll.vertical{gap:0;padding:8px 4px 60px}
+.preview-scroll.vertical .canvas-wrap{
+  flex-direction:row;
+  align-items:flex-start;
+  gap:24px;
+  width:100%;
+  justify-content:center;
+}
+.preview-scroll.vertical .canvas-label{
+  flex-direction:column;
+  align-items:flex-end;
+  text-align:right;
+  min-width:160px;
+  padding-top:32px;
+  gap:8px;
+  flex-wrap:nowrap;
+}
+.preview-scroll.vertical .canvas-label .cl-num{
+  font-size:38px;
+  font-weight:300;
+  color:var(--text-3);
+  line-height:1;
+  margin:0;
+  letter-spacing:-0.02em;
+}
+.preview-scroll.vertical .canvas-label .cl-layer{padding:2px 9px;font-size:10px}
+.preview-scroll.vertical .canvas-label .cl-name{color:var(--text-2);font-size:12px;font-weight:500}
+.preview-scroll.vertical .canvas{box-shadow:none;border:1px solid var(--border)}
+
+/* ── Layout renderers inside canvas ── */
+.cv-bg{position:absolute;inset:0}
+.cv-img-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(255,255,255,.2);font-style:italic;text-align:center;padding:60px;line-height:1.5;pointer-events:none}
+.cv-content{position:absolute;z-index:2;display:flex;flex-direction:column}
+
+/* Draggable text handles */
+.cv-text-block{position:absolute;z-index:3;transition:outline .12s}
+.cv-headline{font-weight:700;line-height:1.15;letter-spacing:-0.01em}
+.cv-body{line-height:1.6;opacity:0.88;margin-top:16px}
+.cv-subtext{opacity:0.6;margin-top:8px}
+
+/* Inline editable in canvas (double-click to edit) */
+[data-edit]{cursor:text;transition:outline .12s,outline-offset .12s,background .12s;position:relative;border-radius:4px}
+[data-edit]:hover{outline:1.5px dashed rgba(166,138,91,0.55);outline-offset:6px;background:rgba(166,138,91,0.04)}
+[data-edit].cv-editing,[data-edit].cv-editing:focus{outline:2px solid var(--amber)!important;outline-offset:6px;background:rgba(255,255,255,0.06);cursor:text}
+[data-edit]:empty::before{content:attr(data-placeholder);opacity:0.28;pointer-events:none;font-style:italic}
+[data-edit]:focus{outline-style:solid}
+.edit-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--amber);color:#fff;font-size:11px;padding:5px 12px;border-radius:20px;font-weight:600;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-family:ui-monospace,monospace;letter-spacing:0.05em}
+.edit-hint.show{opacity:1}
+
+/* Layout-specific styles */
+.layout-single .cv-text-block{inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px}
+.layout-single .cv-body{margin-top:24px}
+
+.layout-left-right .cv-text-block{left:0;top:0;bottom:0;width:50%;display:flex;flex-direction:column;justify-content:center;padding:80px 60px}
+.layout-left-right .cv-img-area{position:absolute;right:0;top:0;bottom:0;width:50%;z-index:1}
+
+.layout-three-point .cv-three-wrap{position:absolute;inset:80px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;z-index:2}
+.layout-three-point .cv-three-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px}
+.layout-three-point .cv-three-icon{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+
+.layout-four-split .cv-four-wrap{position:absolute;inset:60px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:30px;z-index:2}
+.layout-four-split .cv-four-item{border-radius:16px;background:rgba(255,255,255,.08);padding:40px 30px;display:flex;flex-direction:column;gap:12px}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-lt)}
+
+/* ── Tooltip ── */
+.tooltip{position:relative}
+.tooltip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:10px;padding:3px 7px;border-radius:3px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:99}
+.tooltip:hover::after{opacity:1}
+
+/* ── Dev Mode ── */
+.dev-badge{display:none;align-items:center;gap:5px;padding:3px 8px;background:var(--amber);color:#fff;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.06em;font-family:ui-monospace,'SF Mono',Menlo,monospace;margin-left:8px}
+.dev-badge::before{content:'';width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+body.dev-mode .dev-badge{display:inline-flex}
+body.dev-mode [data-dev]{outline:1px dashed rgba(166,138,91,0.35);outline-offset:-1px;position:relative}
+body.dev-mode [data-dev]:hover{outline-color:rgba(166,138,91,1);outline-style:solid;outline-width:1.5px;z-index:5}
+body.dev-mode [data-dev]:hover::before{content:attr(data-dev);position:absolute;top:-18px;left:0;background:var(--amber);color:#fff;font-size:10px;font-family:ui-monospace,'SF Mono',Menlo,monospace;padding:2px 7px;border-radius:3px;white-space:nowrap;z-index:9999;pointer-events:none;font-weight:600;letter-spacing:0.03em;box-shadow:0 2px 4px rgba(0,0,0,0.4)}
+body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;padding:3px 9px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- Topbar -->
+<div class="topbar" data-dev-major data-dev="topbar">
+  <span class="topbar-brand">KIWA</span>
+  <span class="topbar-title">銷售頁設計工具 v1</span>
+  <span class="dev-badge">DEV MODE · alt+D</span>
+  <div class="topbar-client" data-dev="topbar.client">
+    <span class="client-badge" id="topClientName" data-dev="topbar.client-badge">小嶼好好 — 台灣高山烏龍茶</span>
+    <div class="topbar-actions" data-dev="topbar.actions">
+      <button class="tb-btn" onclick="exportJSON()" data-dev="btn.export">匯出草稿</button>
+      <button class="tb-btn primary" onclick="window.print()" data-dev="btn.print">列印 PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="panels">
+
+<!-- ── Panel 1: Navigator ── -->
+<div class="panel-nav" data-dev-major data-dev="panel.nav">
+  <div class="panel-nav-tabs" data-dev="nav.tabs">
+    <div class="nav-tab active" id="tab-screens" onclick="switchNavTab('screens')" data-dev="nav.tab.screens">分屏</div>
+    <div class="nav-tab" id="tab-checklist" onclick="switchNavTab('checklist')" data-dev="nav.tab.checklist">檢核</div>
+  </div>
+
+  <!-- Screens list -->
+  <div class="nav-content" id="nav-screens" data-dev="nav.screens-list">
+    <div id="screenList"></div>
+    <div class="add-screen-btn" onclick="addScreen()" data-dev="btn.add-screen">+ 新增分屏</div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="nav-content" id="nav-checklist" style="display:none" data-dev="nav.checklist">
+    <div id="checklistContent"></div>
+  </div>
+
+  <div class="cl-progress" data-dev="nav.progress">
+    <div style="font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">SOP 完成度</div>
+    <div class="cl-bar"><div class="cl-fill" id="clFill" style="width:0%"></div></div>
+    <div class="cl-pct"><span id="clDone">0</span><span id="clPct">0%</span></div>
+  </div>
+</div>
+
+<!-- ── Panel 2: Editor ── -->
+<div class="panel-editor" data-dev-major data-dev="panel.editor">
+  <div class="editor-header" data-dev="editor.header">
+    <div class="editor-screen-title">
+      <span id="editorLayerBadge" class="editor-layer-badge lb-1">L1</span>
+      <span id="editorScreenName">版頭</span>
+    </div>
+  </div>
+  <div class="editor-body" id="editorBody" data-dev="editor.body">
+    <!-- dynamically rendered -->
+  </div>
+</div>
+
+<!-- ── Panel 3: Preview ── -->
+<div class="panel-preview" data-dev-major data-dev="panel.preview">
+  <div class="preview-header" data-dev="preview.header">
+    <span class="preview-title">即時預覽</span>
+    <div class="preview-nav" data-dev="preview.nav">
+      <button class="pnav-btn" onclick="previewPrev()" data-dev="btn.prev">← 前一屏</button>
+      <button class="pnav-btn" onclick="previewNext()" data-dev="btn.next">下一屏 →</button>
+      <button class="pnav-btn" id="toggleAllBtn" onclick="toggleAllScreens()" data-dev="btn.toggle-all">全部展開</button>
+    </div>
+    <span class="preview-size" id="previewSizeLabel">1080 × 1080 px</span>
+  </div>
+  <div class="preview-body" data-dev="preview.body">
+    <div class="preview-scroll" id="previewScroll"></div>
+  </div>
+</div>
+
+</div><!-- /panels -->
+</div><!-- /app -->
+
+<!-- Edit hint (shown when editing canvas text) -->
+<div class="edit-hint" id="editHint">ENTER 儲存 · ESC 取消 · SHIFT+ENTER 換行</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+const LAYER_META = {
+  'L1': {label:'版頭', cls:'lb-1', color:'#E8944A'},
+  'L2': {label:'訴求', cls:'lb-2', color:'#5AAFEE'},
+  'L3': {label:'商品', cls:'lb-3', color:'#5DC98A'},
+  'L4': {label:'信任', cls:'lb-4', color:'#A87ADE'},
+  'L5': {label:'收單', cls:'lb-5', color:'#E87878'},
+};
+
+const LAYOUTS = [
+  {id:'single',    name:'單一版面'},
+  {id:'left-right',name:'左右分割'},
+  {id:'three-point',name:'三重點'},
+  {id:'four-split', name:'四分割'},
+  {id:'circle',    name:'圓形'},
+  {id:'grid',      name:'表格化'},
+];
+
+const PALETTE = ['#F5F0E8','#1A1A18','#A68A5B','#4A9EE8','#4CAF7D','#E86B5F','#7B5EA7','#E8C44A','#FFFFFF','#000000'];
+
+let state = {
+  client: '小嶼好好',
+  product: '台灣高山烏龍茶',
+  currentId: 1,
+  showAll: false,
+  screens: [
+    {
+      id:1, layer:'L1', name:'版頭 — 主視覺',
+      layout:'single',
+      headline:'小嶼\n純粹台灣茶', headlineSize:96, headlineAlign:'center', headlineColor:'#1A1A18',
+      body:'手工採摘 · 無農藥認證 · 海拔 1200m', bodySize:28, bodyAlign:'center', bodyColor:'#5A5A52',
+      subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+      bgColor:'#F5F0E8', accentColor:'#A68A5B',
+      imageHint:'山嵐茶園俯拍，晨霧自然光，淡金色調，日系極簡',
+      items:[], checked:false,
+    },
+    {
+      id:2, layer:'L2', name:'訴求 — 情境',
+      layout:'single',
+      headline:'在喧囂的城市裡\n找一個只屬於你的時刻', headlineSize:72, headlineAlign:'center', headlineColor:'#FFFFFF',
+      body:'泡一杯小嶼，讓思緒慢下來', bodySize:28, bodyAlign:'center', bodyColor:'rgba(255,255,255,0.75)',
+      subtext:'', subtextSize:18, subtextColor:'rgba(255,255,255,0.5)',
+      bgColor:'#2C3A2A', accentColor:'#A68A5B',
+      imageHint:'窗邊光影、茶湯特寫，暗調但溫暖，電影感構圖',
+      items:[], checked:false,
+    },
+    {
+      id:3, layer:'L3', name:'商品 — 三大特色',
+      layout:'three-point',
+      headline:'為什麼選小嶼', headlineSize:60, headlineAlign:'center', headlineColor:'#1A1A18',
+      body:'', bodySize:22, bodyAlign:'center', bodyColor:'#5A5A52',
+      subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+      bgColor:'#FAFAF7', accentColor:'#A68A5B',
+      imageHint:'三個獨立方塊，搭配圖示',
+      items:[
+        {icon:'🏔',title:'海拔 1,200m',desc:'嘉義阿里山霧帶高山，日夜溫差形成茶葉的天然甜感'},
+        {icon:'🤲',title:'手工採摘',desc:'每年春冬兩季，老師傅一芯二葉，保留完整茶香'},
+        {icon:'🌿',title:'無農藥認證',desc:'SGS 290 項農藥殘留檢驗 ND，安心給全家喝'},
+      ],
+      checked:false,
+    },
+    {
+      id:4, layer:'L3', name:'商品 — 沖泡方式',
+      layout:'three-point',
+      headline:'簡單三步，泡出好茶', headlineSize:60, headlineAlign:'center', headlineColor:'#1A1A18',
+      body:'', bodySize:22, bodyAlign:'center', bodyColor:'#5A5A52',
+      subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+      bgColor:'#F5F0E8', accentColor:'#A68A5B',
+      imageHint:'白底乾淨拍攝，沖泡步驟分解圖',
+      items:[
+        {icon:'💧',title:'90°C 熱水',desc:'避免滾水破壞茶香，取適量過濾水最佳'},
+        {icon:'⏱',title:'靜置 3 分鐘',desc:'第一泡 3 分鐘，之後每泡延長 30 秒'},
+        {icon:'🍃',title:'4g 茶葉',desc:'標準容量 350ml 建議用量，可依濃淡調整'},
+      ],
+      checked:false,
+    },
+    {
+      id:5, layer:'L4', name:'信任 — 認證',
+      layout:'single',
+      headline:'SGS 認證，用數據說話', headlineSize:64, headlineAlign:'center', headlineColor:'#1A1A18',
+      body:'290 項農藥殘留全數 ND\n台灣有機茶葉認證 No.114-25', bodySize:24, bodyAlign:'center', bodyColor:'#5A5A52',
+      subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+      bgColor:'#FAFAF7', accentColor:'#A68A5B',
+      imageHint:'認證書圖樣 + 數字放大 + 乾淨白底',
+      items:[], checked:false,
+    },
+    {
+      id:6, layer:'L4', name:'信任 — 使用心得',
+      layout:'grid',
+      headline:'喝過的人都說好', headlineSize:60, headlineAlign:'center', headlineColor:'#1A1A18',
+      body:'', bodySize:22, bodyAlign:'center', bodyColor:'#5A5A52',
+      subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+      bgColor:'#F5F0E8', accentColor:'#A68A5B',
+      imageHint:'4 個方塊排列，截圖留言或貼文風格',
+      items:[
+        {icon:'⭐⭐⭐⭐⭐',title:'療癒系下午茶',desc:'"第一次喝到這麼乾淨的烏龍，回甘超明顯，已經回購第三次" — Emily'},
+        {icon:'⭐⭐⭐⭐⭐',title:'辦公室必備',desc:'"比咖啡溫和，下午喝也不影響睡眠，同事都在問哪裡買" — Jason'},
+        {icon:'⭐⭐⭐⭐⭐',title:'送禮首選',desc:'"包裝很美，做為伴手禮送長輩超有面子，附上沖泡卡很貼心" — Vivian'},
+        {icon:'⭐⭐⭐⭐⭐',title:'媽媽放心喝',desc:'"有SGS認證才敢給小孩的阿公喝，成分真的很乾淨" — 小嶼媽媽'},
+      ],
+      checked:false,
+    },
+    {
+      id:7, layer:'L5', name:'收單 — 限時優惠',
+      layout:'single',
+      headline:'三入組限時特惠\n買茶再送品茗杯', headlineSize:80, headlineAlign:'center', headlineColor:'#FFFFFF',
+      body:'原價 $1,170，現在只要 $890 → 省 $280\n限量 200 組，售完不補', bodySize:26, bodyAlign:'center', bodyColor:'rgba(255,255,255,0.85)',
+      subtext:'', subtextSize:18, subtextColor:'rgba(255,255,255,0.55)',
+      bgColor:'#2C3A2A', accentColor:'#A68A5B',
+      imageHint:'茶葉三包 + 品茗杯平鋪俯拍，主視覺清晰',
+      items:[], checked:false,
+    },
+  ],
+  checklist: [
+    {group:'專案準備',items:[
+      {id:'cl1',text:'確認 Persona（一句話描述）',checked:false},
+      {id:'cl2',text:'廣告素材導流方向確認',checked:false},
+      {id:'cl3',text:'商品資料、圖片素材到位',checked:false},
+    ]},
+    {group:'文字架構',items:[
+      {id:'cl4',text:'版頭文案（一句特色 10 字以內）',checked:false},
+      {id:'cl5',text:'訴求文案（建立關聯，非功能列表）',checked:false},
+      {id:'cl6',text:'商品特色文案（3-5 個賣點）',checked:false},
+      {id:'cl7',text:'信任素材收集完成（認證/心得）',checked:false},
+      {id:'cl8',text:'收單文案（優惠方案明確）',checked:false},
+    ]},
+    {group:'設計規範',items:[
+      {id:'cl9',text:'版頭圖片質感 90% 心力投入',checked:false},
+      {id:'cl10',text:'點出問題圖片未出現自家產品',checked:false},
+      {id:'cl11',text:'競品比較用暗示，未露品牌名',checked:false},
+      {id:'cl12',text:'每屏資訊量在視覺承受範圍',checked:false},
+      {id:'cl13',text:'使用步驟不超過 5 步',checked:false},
+    ]},
+    {group:'產出確認',items:[
+      {id:'cl14',text:'廣告到版頭訊息一致（不斷訊）',checked:false},
+      {id:'cl15',text:'手機版確認：文字可讀不裁切',checked:false},
+      {id:'cl16',text:'客戶審稿通過',checked:false},
+      {id:'cl17',text:'上架確認頁面顯示正常',checked:false},
+    ]},
+  ],
+};
+
+// ══════════════════════════════════════════════
+//  INIT & RENDER
+// ══════════════════════════════════════════════
+function init(){
+  renderScreenList();
+  renderChecklist();
+  selectScreen(state.currentId);
+  updateChecklistProgress();
+}
+
+// ── Screen list ──
+function renderScreenList(){
+  const el = document.getElementById('screenList');
+  el.innerHTML = state.screens.map(s=>{
+    const m = LAYER_META[s.layer];
+    const active = s.id === state.currentId ? 'active' : '';
+    const done = s.checked ? 'done' : '';
+    return `<div class="screen-item ${active} ${done}" onclick="selectScreen(${s.id})" data-id="${s.id}" data-dev="screen.item[${s.id}]">
+      <div class="s-num ${m.cls}">${s.layer}</div>
+      <div class="s-name">${s.name}</div>
+      <div class="s-check"></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Select screen ──
+function selectScreen(id){
+  state.currentId = id;
+  renderScreenList();
+  renderEditor();
+  renderPreview();
+}
+
+// ── Editor ──
+function renderEditor(){
+  const s = getCurrent();
+  if(!s) return;
+  const m = LAYER_META[s.layer];
+  document.getElementById('editorLayerBadge').textContent = s.layer;
+  document.getElementById('editorLayerBadge').className = `editor-layer-badge ${m.cls}`;
+  document.getElementById('editorScreenName').textContent = s.name;
+
+  const hasItems = ['three-point','four-split','grid'].includes(s.layout) && s.items.length > 0;
+
+  document.getElementById('editorBody').innerHTML = `
+    <!-- Meta -->
+    <div class="e-section" data-dev="section.meta"><div class="e-section-title">基本資料</div></div>
+    <div class="field" data-dev="field.name"><label>分屏名稱</label>
+      <input type="text" value="${esc(s.name)}" oninput="update('name',this.value)">
+    </div>
+    <div class="field-row">
+      <div class="field" data-dev="field.layer"><label>層級</label>
+        <select onchange="update('layer',this.value)">${Object.keys(LAYER_META).map(k=>`<option value="${k}"${s.layer===k?' selected':''}>${k} ${LAYER_META[k].label}</option>`).join('')}</select>
+      </div>
+      <div class="field" data-dev="field.bg-color"><label>背景色</label>
+        <div class="color-row">
+          ${PALETTE.map(c=>`<div class="color-swatch${s.bgColor===c?' active':''}" style="background:${c};border:2px solid ${s.bgColor===c?'#fff':'transparent'}" onclick="update('bgColor','${c}')" data-tip="${c}"></div>`).join('')}
+          <input type="color" class="color-input" value="${s.bgColor}" onchange="update('bgColor',this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout -->
+    <div class="e-section" data-dev="section.layout"><div class="e-section-title">版面分割</div></div>
+    <div class="layout-picker" data-dev="field.layout">
+      ${LAYOUTS.map(l=>`<div class="lp-opt${s.layout===l.id?' active':''}" onclick="update('layout','${l.id}')" data-dev="layout.${l.id}">
+        <div class="lp-thumb">${thumbFor(l.id)}</div>
+        <div class="lp-name">${l.name}</div>
+      </div>`).join('')}
+    </div>
+
+    <!-- Headline -->
+    <div class="e-section" data-dev="section.headline"><div class="e-section-title">主標文案</div></div>
+    <div class="field" data-dev="field.headline-text"><label>大標（可換行）</label>
+      <textarea rows="3" oninput="update('headline',this.value)">${esc(s.headline)}</textarea>
+    </div>
+    <div class="field" data-dev="field.headline-size">
+      <label>字體大小 <span style="color:var(--amber)">${s.headlineSize}px</span></label>
+      <div class="slider-wrap">
+        <input type="range" min="24" max="140" value="${s.headlineSize}" oninput="update('headlineSize',+this.value);this.previousElementSibling&&(this.previousElementSibling.textContent='')">
+        <span class="slider-val" id="hlSize">${s.headlineSize}</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field" data-dev="field.headline-align"><label>對齊</label>
+        <div class="align-btns">
+          ${['left','center','right'].map(a=>`<button class="align-btn${s.headlineAlign===a?' active':''}" onclick="update('headlineAlign','${a}')">${a==='left'?'≡':a==='center'?'≡':'≡'} ${a[0].toUpperCase()}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.headline-color"><label>顏色</label>
+        <div class="color-row">
+          ${['#FFFFFF','#1A1A18','#A68A5B','#F5F0E8'].map(c=>`<div class="color-swatch${s.headlineColor===c?' active':''}" style="background:${c}" onclick="update('headlineColor','${c}')"></div>`).join('')}
+          <input type="color" class="color-input" value="${s.headlineColor}" onchange="update('headlineColor',this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="e-section" data-dev="section.body"><div class="e-section-title">內文文案</div></div>
+    <div class="field" data-dev="field.body-text"><label>內文</label>
+      <textarea rows="2" oninput="update('body',this.value)">${esc(s.body)}</textarea>
+    </div>
+    <div class="field" data-dev="field.body-size">
+      <label>字體大小 <span style="color:var(--amber)">${s.bodySize}px</span></label>
+      <div class="slider-wrap">
+        <input type="range" min="12" max="60" value="${s.bodySize}" oninput="update('bodySize',+this.value)">
+        <span class="slider-val">${s.bodySize}</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field" data-dev="field.body-align"><label>對齊</label>
+        <div class="align-btns">
+          ${['left','center','right'].map(a=>`<button class="align-btn${s.bodyAlign===a?' active':''}" onclick="update('bodyAlign','${a}')">${a[0].toUpperCase()}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.body-color"><label>顏色</label>
+        <div class="color-row">
+          ${['#FFFFFF','#1A1A18','#A68A5B','rgba(255,255,255,0.75)','#5A5A52'].map(c=>`<div class="color-swatch${s.bodyColor===c?' active':''}" style="background:${c}" onclick="update('bodyColor','${c}')"></div>`).join('')}
+          <input type="color" class="color-input" value="${toHex(s.bodyColor)}" onchange="update('bodyColor',this.value)">
+        </div>
+      </div>
+    </div>
+
+    ${hasItems ? renderItemsEditor(s) : ''}
+
+    <!-- Image hint -->
+    <div class="e-section" data-dev="section.image-hint"><div class="e-section-title">圖片需求說明</div></div>
+    <div class="field" data-dev="field.image-hint"><label>給攝影/設計師看的備注</label>
+      <textarea rows="2" oninput="update('imageHint',this.value)">${esc(s.imageHint)}</textarea>
+    </div>
+
+    <!-- Done toggle -->
+    <div class="field" data-dev="field.done-toggle" style="margin-top:8px">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;color:var(--text);cursor:pointer">
+        <input type="checkbox" ${s.checked?'checked':''} onchange="update('checked',this.checked)" style="accent-color:var(--green);width:14px;height:14px">
+        標記這一屏已完成
+      </label>
+    </div>
+  `;
+  // attach slider live update for size labels
+  const sliders = document.querySelectorAll('#editorBody input[type=range]');
+  sliders.forEach(sl=>{
+    sl.addEventListener('input', ()=>{
+      const next = sl.nextElementSibling;
+      if(next && next.classList.contains('slider-val')) next.textContent = sl.value;
+    });
+  });
+}
+
+function renderItemsEditor(s){
+  return `<div class="e-section" data-dev="section.items"><div class="e-section-title">列點內容 (${s.items.length} 項)</div></div>
+  ${s.items.map((item,i)=>`
+    <div style="background:var(--bg3);border-radius:6px;padding:10px;margin-bottom:8px;border:1px solid var(--border)" data-dev="item.editor[${i}]">
+      <div class="field-row" style="margin-bottom:6px">
+        <div class="field" style="margin:0" data-dev="field.item-icon[${i}]"><label>圖示/Emoji</label>
+          <input type="text" value="${esc(item.icon)}" oninput="updateItem(${i},'icon',this.value)" style="font-size:20px;text-align:center">
+        </div>
+        <div class="field" style="margin:0" data-dev="field.item-title[${i}]"><label>小標題</label>
+          <input type="text" value="${esc(item.title)}" oninput="updateItem(${i},'title',this.value)">
+        </div>
+      </div>
+      <div class="field" style="margin:0" data-dev="field.item-desc[${i}]"><label>描述文字</label>
+        <textarea rows="2" oninput="updateItem(${i},'desc',this.value)">${esc(item.desc)}</textarea>
+      </div>
+    </div>
+  `).join('')}
+  <div class="add-screen-btn" onclick="addItem()" style="margin:0 0 14px" data-dev="btn.add-item">+ 新增列點</div>`;
+}
+
+// ── Preview ──
+function renderPreview(){
+  const scroll = document.getElementById('previewScroll');
+  const body = document.querySelector('.preview-body');
+  const toRender = state.showAll ? state.screens : state.screens.filter(s=>s.id===state.currentId);
+  scroll.className = state.showAll ? 'preview-scroll vertical' : 'preview-scroll';
+  body.className = state.showAll ? 'preview-body' : 'preview-body single-mode';
+  scroll.innerHTML = toRender.map(s=>renderCanvas(s)).join('');
+  makeTextsDraggable();
+  setupCanvasEditing();
+}
+
+function renderCanvas(s){
+  const scale = getScale();
+  const scaled = Math.round(1080 * scale);
+  const m = LAYER_META[s.layer];
+  const radius = state.showAll ? 0 : Math.round(12 * scale);
+  return `
+  <div class="canvas-wrap" data-dev="canvas.wrap[${s.id}]">
+    <div class="canvas" data-dev="canvas[${s.id}]" style="width:${scaled}px;height:${scaled}px;border-radius:${radius}px">
+      <div class="canvas-inner layout-${s.layout}" id="cv-${s.id}" style="transform:scale(${scale});background:${s.bgColor}" data-dev="canvas.inner[${s.id}]">
+        ${renderCanvasContent(s)}
+      </div>
+    </div>
+    <div class="canvas-label" data-dev="canvas.label[${s.id}]">
+      <span class="cl-num">${String(s.id).padStart(2,'0')} / ${String(state.screens.length).padStart(2,'0')}</span>
+      <span class="cl-layer ${m.cls}">${s.layer} ${m.label}</span>
+      <span class="cl-name">${esc(s.name)}</span>
+    </div>
+  </div>`;
+}
+
+function renderCanvasContent(s){
+  switch(s.layout){
+    case 'left-right': return renderLeftRight(s);
+    case 'three-point': return renderThreePoint(s);
+    case 'four-split': return renderFourSplit(s);
+    case 'circle': return renderCircle(s);
+    case 'grid': return renderGridLayout(s);
+    default: return renderSingle(s);
+  }
+}
+
+function renderSingle(s){
+  return `
+    <div class="cv-img-hint" data-dev="canvas.image-hint" style="font-size:${Math.round(28*getScale()*getScale())}px">${esc(s.imageHint)}</div>
+    <div class="cv-text-block layout-single" data-dev="canvas.text-block"
+      style="inset:0;position:absolute;display:flex;flex-direction:column;justify-content:center;align-items:${s.headlineAlign==='left'?'flex-start':s.headlineAlign==='right'?'flex-end':'center'};text-align:${s.headlineAlign};padding:80px">
+      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor};white-space:pre-line">${esc(s.headline)}</div>
+      <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};text-align:${s.bodyAlign};white-space:pre-line">${esc(s.body)}</div>
+    </div>`;
+}
+
+function renderLeftRight(s){
+  return `
+    <div class="cv-img-area cv-img-hint" data-dev="canvas.image-area" style="right:0;top:0;bottom:0;width:50%;position:absolute;font-size:20px;display:flex;align-items:center;justify-content:center;padding:40px;text-align:center">${esc(s.imageHint)}</div>
+    <div data-dev="canvas.text-block" style="position:absolute;left:0;top:0;bottom:0;width:50%;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;text-align:${s.headlineAlign}">
+      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor};white-space:pre-line">${esc(s.headline)}</div>
+      <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};white-space:pre-line">${esc(s.body)}</div>
+    </div>`;
+}
+
+function renderThreePoint(s){
+  const items = s.items.length ? s.items : [{icon:'○',title:'特色一',desc:'描述文字'},{icon:'○',title:'特色二',desc:'描述文字'},{icon:'○',title:'特色三',desc:'描述文字'}];
+  return `
+    <div data-dev="canvas.headline-area" style="position:absolute;top:80px;left:80px;right:80px;text-align:${s.headlineAlign}">
+      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor}">${esc(s.headline)}</div>
+    </div>
+    <div data-dev="canvas.items-grid" style="position:absolute;top:260px;bottom:80px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px">
+      ${items.slice(0,3).map((item,i)=>`
+        <div data-dev="canvas.item[${i}]" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px">
+          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="width:120px;height:120px;border-radius:50%;background:${s.accentColor}22;display:flex;align-items:center;justify-content:center;font-size:52px;flex-shrink:0">${esc(item.icon)}</div>
+          <div>
+            <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="小標題" style="font-size:${Math.round(s.bodySize*1.2)}px;font-weight:700;color:${s.headlineColor};margin-bottom:16px">${esc(item.title)}</div>
+            <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="描述文字" style="font-size:${Math.round(s.bodySize*0.85)}px;color:${s.bodyColor};line-height:1.6">${esc(item.desc)}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderFourSplit(s){
+  const items = s.items.length ? s.items : Array(4).fill(0).map((_,i)=>({icon:'',title:`重點 ${i+1}`,desc:'描述文字'}));
+  return `
+    <div data-dev="canvas.headline-area" style="position:absolute;top:60px;left:80px;right:80px;text-align:${s.headlineAlign}">
+      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${Math.round(s.headlineSize*0.75)}px;color:${s.headlineColor}">${esc(s.headline)}</div>
+    </div>
+    <div data-dev="canvas.items-grid" style="position:absolute;top:200px;bottom:60px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:30px">
+      ${items.slice(0,4).map((item,i)=>`
+        <div data-dev="canvas.item[${i}]" style="border-radius:20px;background:${s.accentColor}18;border:1px solid ${s.accentColor}40;padding:50px 40px;display:flex;flex-direction:column;gap:14px">
+          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="font-size:40px;min-height:1em">${esc(item.icon)}</div>
+          <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="小標題" style="font-size:${Math.round(s.bodySize*1.1)}px;font-weight:700;color:${s.headlineColor}">${esc(item.title)}</div>
+          <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="描述文字" style="font-size:${Math.round(s.bodySize*0.82)}px;color:${s.bodyColor};line-height:1.55">${esc(item.desc)}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderCircle(s){
+  const items = s.items.length ? s.items : Array(6).fill(0).map((_,i)=>({icon:'○',title:`項目 ${i+1}`,desc:''}));
+  const count = Math.min(items.length, 6);
+  const radius = 340;          // 圓半徑（離中心多遠）
+  const itemSize = 200;        // 每個項目區塊寬度
+  const iconSize = 100;        // 圓形 icon 寬度
+  const startAngle = -90;      // 從正上方開始（順時針）
+  const headlineFs = Math.min(s.headlineSize, 64);  // 圓中心字體上限避免壓邊
+  const bodyFs = Math.round(s.bodySize * 0.85);
+
+  return `
+    <!-- 中心：標題 -->
+    <div data-dev="canvas.center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;z-index:5;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${headlineFs}px;color:${s.headlineColor};line-height:1.2;white-space:pre-line">${esc(s.headline)}</div>
+      <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};line-height:1.5">${esc(s.body)}</div>
+    </div>
+    <!-- 圓形軌跡 -->
+    <div data-dev="canvas.circle-ring" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${radius*2}px;height:${radius*2}px;border-radius:50%;border:1.5px dashed ${s.accentColor}55;z-index:1;pointer-events:none"></div>
+    <!-- 項目們 -->
+    ${items.slice(0,count).map((item,i)=>{
+      const angle = (startAngle + (360/count) * i) * Math.PI/180;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      return `<div data-dev="canvas.item[${i}]" style="position:absolute;top:50%;left:50%;width:${itemSize}px;transform:translate(calc(-50% + ${Math.round(x)}px), calc(-50% + ${Math.round(y)}px));display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;z-index:3">
+        <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="width:${iconSize}px;height:${iconSize}px;border-radius:50%;background:${s.accentColor};display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.15)">${esc(item.icon)}</div>
+        <div>
+          <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="小標題" style="font-size:${bodyFs}px;font-weight:700;color:${s.headlineColor};line-height:1.3">${esc(item.title)}</div>
+          <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="描述" style="font-size:${Math.round(bodyFs*0.78)}px;color:${s.bodyColor};line-height:1.5;margin-top:6px">${esc(item.desc)}</div>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+function renderGridLayout(s){
+  const items = s.items.length ? s.items : Array(4).fill(0).map((_,i)=>({icon:'⭐⭐⭐⭐⭐',title:`心得 ${i+1}`,desc:'使用心得文字'}));
+  return `
+    <div data-dev="canvas.headline-area" style="position:absolute;top:70px;left:80px;right:80px;text-align:${s.headlineAlign}">
+      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${Math.round(s.headlineSize*0.78)}px;color:${s.headlineColor}">${esc(s.headline)}</div>
+    </div>
+    <div data-dev="canvas.items-grid" style="position:absolute;top:220px;bottom:60px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      ${items.slice(0,4).map((item,i)=>`
+        <div data-dev="canvas.item[${i}]" style="border-radius:16px;background:${s.accentColor}14;border:1px solid ${s.accentColor}30;padding:44px 40px;display:flex;flex-direction:column;gap:12px">
+          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="⭐" style="font-size:22px;min-height:1em">${esc(item.icon)}</div>
+          <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="標題" style="font-size:${Math.round(s.bodySize)}px;font-weight:700;color:${s.headlineColor}">${esc(item.title)}</div>
+          <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="心得內容" style="font-size:${Math.round(s.bodySize*0.8)}px;color:${s.bodyColor};line-height:1.55">${esc(item.desc)}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ── Scale calculation ──
+function getScale(){
+  const previewW = document.querySelector('.panel-preview')?.offsetWidth || 600;
+  const previewH = document.querySelector('.panel-preview')?.offsetHeight || 700;
+  if(state.showAll){
+    // 直向堆疊：以寬度為主，留 scrollbar + padding 空間
+    const maxW = previewW - 60;
+    return Math.min(maxW/1080, 0.55);
+  }
+  // 單屏模式：寬高都要塞進去
+  const maxW = previewW - 60;
+  const maxH = previewH - 80;
+  return Math.min(maxW/1080, maxH/1080, 0.5);
+}
+
+// ── Draggable text (basic) ──
+function makeTextsDraggable(){
+  // placeholder: future enhancement
+}
+
+// ══════════════════════════════════════════════
+//  INLINE EDIT (double-click on canvas text)
+// ══════════════════════════════════════════════
+let editingEl = null;
+
+function setupCanvasEditing(){
+  const root = document.getElementById('previewScroll');
+  if(!root || root.dataset.editingBound) return;
+  root.dataset.editingBound = '1';
+  root.addEventListener('dblclick', e=>{
+    const target = e.target.closest('[data-edit]');
+    if(!target) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if(editingEl && editingEl !== target) finishCanvasEdit(editingEl, false);
+    if(editingEl === target) return;
+    startCanvasEdit(target);
+  });
+}
+
+function startCanvasEdit(el){
+  editingEl = el;
+  el.contentEditable = 'true';
+  el.classList.add('cv-editing');
+  el.dataset.original = el.innerText;
+  // Disable text selection style on canvas during edit
+  el.style.userSelect = 'text';
+  el.style.webkitUserSelect = 'text';
+  // Prevent paste of formatted content
+  el.addEventListener('paste', onEditPaste);
+  el.addEventListener('blur', onEditBlur);
+  el.addEventListener('keydown', onEditKey);
+  // Focus + select all
+  setTimeout(()=>{
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }, 0);
+  // Show hint bubble
+  document.getElementById('editHint')?.classList.add('show');
+}
+
+function onEditPaste(e){
+  e.preventDefault();
+  const text = e.clipboardData.getData('text/plain');
+  document.execCommand('insertText', false, text);
+}
+
+function onEditBlur(e){
+  finishCanvasEdit(e.currentTarget, false);
+}
+
+function onEditKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    e.currentTarget.blur();
+  } else if(e.key === 'Escape'){
+    e.preventDefault();
+    finishCanvasEdit(e.currentTarget, true);
+  }
+}
+
+function finishCanvasEdit(el, cancel){
+  if(!el) return;
+  el.removeEventListener('paste', onEditPaste);
+  el.removeEventListener('blur', onEditBlur);
+  el.removeEventListener('keydown', onEditKey);
+  el.contentEditable = 'false';
+  el.classList.remove('cv-editing');
+  document.getElementById('editHint')?.classList.remove('show');
+
+  const path = el.dataset.edit;
+  const screenId = parseInt(el.dataset.screenId, 10);
+
+  if(cancel){
+    el.innerText = el.dataset.original || '';
+  } else {
+    saveCanvasEdit(screenId, path, el.innerText);
+  }
+  delete el.dataset.original;
+  if(editingEl === el) editingEl = null;
+}
+
+function saveCanvasEdit(screenId, path, value){
+  const screen = state.screens.find(s=>s.id === screenId);
+  if(!screen) return;
+  // path 格式：'headline' | 'body' | 'items.0.title' | 'items.0.desc' | 'items.0.icon' | 'imageHint'
+  const parts = path.split('.');
+  if(parts.length === 1){
+    screen[parts[0]] = value;
+  } else if(parts[0] === 'items'){
+    const idx = parseInt(parts[1], 10);
+    const field = parts[2];
+    if(screen.items[idx] && field){
+      screen.items[idx][field] = value;
+    }
+  }
+  renderEditor();   // sync left/middle panel input boxes
+  renderPreview();  // re-render preview (also re-renders this canvas)
+}
+
+// ── Thumb SVG for layout picker ──
+function thumbFor(id){
+  switch(id){
+    case 'single': return `<div class="lt-block" style="width:70%;height:68%;border-radius:3px"></div>`;
+    case 'left-right': return `<div class="lt-block" style="width:44%;height:64%;border-radius:3px"></div><div class="lt-block" style="width:44%;height:64%;border-radius:3px"></div>`;
+    case 'three-point': return `<div style="display:flex;gap:3px;align-items:flex-end"><div class="lt-block" style="width:24%;height:44%;border-radius:2px"></div><div class="lt-block" style="width:24%;height:60%;border-radius:2px"></div><div class="lt-block" style="width:24%;height:44%;border-radius:2px"></div></div>`;
+    case 'four-split': return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;width:70%;height:64%"><div class="lt-block" style="border-radius:2px"></div><div class="lt-block" style="border-radius:2px"></div><div class="lt-block" style="border-radius:2px"></div><div class="lt-block" style="border-radius:2px"></div></div>`;
+    case 'circle': return `<div style="position:relative;width:28px;height:28px;display:flex;align-items:center;justify-content:center"><div style="position:absolute;width:26px;height:26px;border:1.2px solid var(--border-lt);border-radius:50%"></div><div class="lt-block" style="width:8px;height:8px;border-radius:50%"></div><div class="lt-block" style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%"></div><div class="lt-block" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%"></div><div class="lt-block" style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%"></div><div class="lt-block" style="position:absolute;right:0;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:50%"></div></div>`;
+    case 'grid': return `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;width:72%;height:64%"><div class="lt-block" style="border-radius:1px"></div><div class="lt-block" style="border-radius:1px"></div><div class="lt-block" style="border-radius:1px"></div><div class="lt-block" style="border-radius:1px"></div><div class="lt-block" style="border-radius:1px"></div><div class="lt-block" style="border-radius:1px"></div></div>`;
+    default: return '';
+  }
+}
+
+// ── Checklist ──
+function renderChecklist(){
+  const el = document.getElementById('checklistContent');
+  el.innerHTML = state.checklist.map(group=>`
+    <div class="cl-group">
+      <div class="cl-group-header">${group.group}</div>
+      <div class="cl-items">
+        ${group.items.map(item=>`
+          <div class="cl-item${item.checked?' checked':''}" id="cli-${item.id}">
+            <input type="checkbox" id="${item.id}" ${item.checked?'checked':''} onchange="toggleCL('${item.id}')">
+            <label for="${item.id}">${item.text}</label>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleCL(id){
+  state.checklist.forEach(g=>g.items.forEach(item=>{
+    if(item.id===id){ item.checked=!item.checked; }
+  }));
+  renderChecklist();
+  updateChecklistProgress();
+}
+
+function updateChecklistProgress(){
+  const all = state.checklist.flatMap(g=>g.items);
+  const done = all.filter(i=>i.checked).length;
+  const pct = Math.round(done/all.length*100);
+  document.getElementById('clFill').style.width = pct+'%';
+  document.getElementById('clDone').textContent = `${done}/${all.length}`;
+  document.getElementById('clPct').textContent = pct+'%';
+}
+
+// ── State helpers ──
+function getCurrent(){ return state.screens.find(s=>s.id===state.currentId); }
+
+function update(key, val){
+  const s = getCurrent();
+  if(!s) return;
+  s[key] = val;
+  renderScreenList();
+  renderPreview();
+  // partial re-render for sliders (avoid full editor re-render which loses focus)
+  if(key==='layout') { renderEditor(); renderPreview(); }
+}
+
+function updateItem(idx, key, val){
+  const s = getCurrent();
+  if(!s||!s.items[idx]) return;
+  s.items[idx][key] = val;
+  renderPreview();
+}
+
+function addItem(){
+  const s = getCurrent();
+  if(!s) return;
+  s.items.push({icon:'✦', title:'新項目', desc:'描述文字'});
+  renderEditor();
+  renderPreview();
+}
+
+function addScreen(){
+  const ids = state.screens.map(s=>s.id);
+  const newId = Math.max(...ids)+1;
+  state.screens.push({
+    id:newId, layer:'L3', name:`新分屏 ${newId}`,
+    layout:'single',
+    headline:'標題文案', headlineSize:72, headlineAlign:'center', headlineColor:'#1A1A18',
+    body:'內文說明', bodySize:24, bodyAlign:'center', bodyColor:'#5A5A52',
+    subtext:'', subtextSize:18, subtextColor:'#8A8A7E',
+    bgColor:'#FAFAF7', accentColor:'#A68A5B',
+    imageHint:'圖片說明',
+    items:[], checked:false,
+  });
+  selectScreen(newId);
+}
+
+// ── Nav tabs ──
+function switchNavTab(tab){
+  document.getElementById('nav-screens').style.display = tab==='screens'?'block':'none';
+  document.getElementById('nav-checklist').style.display = tab==='checklist'?'block':'none';
+  document.getElementById('tab-screens').className = `nav-tab${tab==='screens'?' active':''}`;
+  document.getElementById('tab-checklist').className = `nav-tab${tab==='checklist'?' active':''}`;
+}
+
+// ── Preview nav ──
+function previewPrev(){
+  const idx = state.screens.findIndex(s=>s.id===state.currentId);
+  if(idx>0){ state.showAll=false; selectScreen(state.screens[idx-1].id); }
+}
+function previewNext(){
+  const idx = state.screens.findIndex(s=>s.id===state.currentId);
+  if(idx<state.screens.length-1){ state.showAll=false; selectScreen(state.screens[idx+1].id); }
+}
+function toggleAllScreens(){
+  state.showAll=!state.showAll;
+  const btn = document.getElementById('toggleAllBtn');
+  if(btn) btn.textContent = state.showAll ? '返回單屏' : '全部展開';
+  renderPreview();
+}
+
+// ── Export ──
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`${state.client}-銷售頁草稿.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ── Utilities ──
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toHex(c){
+  if(c&&c.startsWith('#')&&(c.length===4||c.length===7)) return c;
+  return '#A68A5B';
+}
+
+// ── Window resize ──
+window.addEventListener('resize', ()=>{ renderPreview(); });
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='ArrowLeft'){ e.preventDefault(); previewPrev(); }
+  if((e.metaKey||e.ctrlKey)&&e.key==='ArrowRight'){ e.preventDefault(); previewNext(); }
+  if(e.altKey && (e.key==='d' || e.key==='D' || e.code==='KeyD')){
+    e.preventDefault();
+    document.body.classList.toggle('dev-mode');
+    const on = document.body.classList.contains('dev-mode');
+    console.log(`[DEV MODE] ${on ? 'ON' : 'OFF'} — hover any element to see its data-dev name`);
+  }
+});
+
+// ── Start ──
+init();
+</script>
+</body>
+</html>
