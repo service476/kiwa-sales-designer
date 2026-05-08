@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>銷售頁設計工具 — Kiwa Agency</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -264,6 +265,14 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:12px;p
 .client-delete{width:24px;height:24px;border-radius:4px;border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;flex-shrink:0}
 .client-item:hover .client-delete{opacity:1}
 .client-delete:hover{background:var(--red-bg);color:var(--red)}
+
+/* Export PNG modal */
+.export-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:flex-start;justify-content:flex-end;padding-top:48px;padding-right:16px}
+.export-overlay.open{display:flex}
+.export-panel{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;width:268px;box-shadow:0 8px 32px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:12px}
+.export-panel-title{font-size:13px;font-weight:700;color:var(--text-hi);letter-spacing:0.02em}
+.export-progress{font-size:12px;color:var(--amber);text-align:center;min-height:18px}
+.export-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:2px}
 </style>
 </head>
 <body>
@@ -279,6 +288,7 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:12px;p
     <div class="topbar-actions" data-dev="topbar.actions">
       <button class="tb-btn" onclick="importJSON()" data-dev="btn.import">匯入草稿</button>
       <button class="tb-btn" onclick="exportJSON()" data-dev="btn.export">匯出草稿</button>
+      <button class="tb-btn" onclick="openExportPNGModal()" data-dev="btn.export-png">匯出 PNG</button>
       <button class="tb-btn primary" onclick="window.print()" data-dev="btn.print">列印 PDF</button>
     </div>
   </div>
@@ -1455,13 +1465,104 @@ function toggleAllScreens(){
   renderPreview();
 }
 
-// ── Export ──
+// ── Export JSON ──
 function exportJSON(){
   const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href=url; a.download=`${state.client}-銷售頁草稿.json`;
   a.click(); URL.revokeObjectURL(url);
+}
+
+// ── Export PNG ──
+const _expOpts = { scope: 'current', bg: 'transparent' };
+
+function openExportPNGModal(){
+  setExpScope(_expOpts.scope);
+  setExpBg(_expOpts.bg);
+  document.getElementById('exportProgress').textContent = '';
+  document.getElementById('exportOverlay').classList.add('open');
+}
+function closeExportPNGModal(){
+  document.getElementById('exportOverlay').classList.remove('open');
+}
+function setExpScope(val){
+  _expOpts.scope = val;
+  document.getElementById('expScope-current').classList.toggle('active', val==='current');
+  document.getElementById('expScope-all').classList.toggle('active', val==='all');
+}
+function setExpBg(val){
+  _expOpts.bg = val;
+  document.getElementById('expBg-transparent').classList.toggle('active', val==='transparent');
+  document.getElementById('expBg-color').classList.toggle('active', val==='color');
+}
+
+async function doExportPNG(){
+  if(typeof html2canvas === 'undefined'){
+    alert('html2canvas 尚未載入，請確認網路連線後重新整理頁面。');
+    return;
+  }
+  const screens = _expOpts.scope === 'all'
+    ? state.screens
+    : [getCurrent()].filter(Boolean);
+  if(!screens.length) return;
+
+  const prog = document.getElementById('exportProgress');
+  prog.textContent = `準備中...`;
+
+  for(let i = 0; i < screens.length; i++){
+    const s = screens[i];
+    prog.textContent = `匯出 ${i+1} / ${screens.length}：${s.name}`;
+    try {
+      await exportScreenToPNG(s);
+    } catch(e) {
+      prog.textContent = `第 ${i+1} 張失敗：${e.message}`;
+      await new Promise(r=>setTimeout(r,1500));
+    }
+    if(i < screens.length - 1) await new Promise(r=>setTimeout(r, 250));
+  }
+  prog.textContent = `完成 ${screens.length} 張 ✓`;
+}
+
+async function exportScreenToPNG(s){
+  const sz = getSize(s);
+  const useBg = _expOpts.bg === 'color';
+
+  // 建立全尺寸 off-screen 容器（無 scale transform）
+  const wrap = document.createElement('div');
+  wrap.style.cssText = `position:fixed;top:-${sz.h+100}px;left:0;width:${sz.w}px;height:${sz.h}px;overflow:hidden;z-index:-1`;
+
+  const inner = document.createElement('div');
+  inner.className = `canvas-inner layout-${s.layout}`;
+  inner.style.cssText = `width:${sz.w}px;height:${sz.h}px;position:relative;overflow:hidden;background:${useBg ? s.bgColor : 'transparent'}`;
+  inner.innerHTML = renderCanvasContent(s);
+
+  // 隱藏 imageHint 佔位文字（僅供設計師參考，不輸出）
+  wrap.appendChild(inner);
+  document.body.appendChild(wrap);
+  inner.querySelectorAll('.cv-img-hint').forEach(el=>el.style.opacity='0');
+
+  try {
+    const canvas = await html2canvas(inner, {
+      width: sz.w,
+      height: sz.h,
+      scale: 1,
+      backgroundColor: useBg ? s.bgColor : null,
+      useCORS: true,
+      logging: false,
+      imageTimeout: 0,
+    });
+    const safe = (str) => str.replace(/[\/\\:*?"<>|]/g,'_');
+    const filename = `${safe(state.client)}_${s.layer}_${safe(s.name)}_${sz.short}.png`;
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = canvas.toDataURL('image/png');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } finally {
+    document.body.removeChild(wrap);
+  }
 }
 
 // ── Utilities ──
@@ -2218,5 +2319,31 @@ function renderClientModal(){
 // ── Start ──
 init();
 </script>
+
+<!-- Export PNG Modal -->
+<div class="export-overlay" id="exportOverlay" onclick="closeExportPNGModal()">
+  <div class="export-panel" onclick="event.stopPropagation()">
+    <div class="export-panel-title">匯出 PNG</div>
+    <div class="field" style="margin:0">
+      <label>範圍</label>
+      <div class="align-btns">
+        <button class="align-btn active" id="expScope-current" onclick="setExpScope('current')">當前分屏</button>
+        <button class="align-btn" id="expScope-all" onclick="setExpScope('all')">全部分屏</button>
+      </div>
+    </div>
+    <div class="field" style="margin:0">
+      <label>背景</label>
+      <div class="align-btns">
+        <button class="align-btn active" id="expBg-transparent" onclick="setExpBg('transparent')">透明</button>
+        <button class="align-btn" id="expBg-color" onclick="setExpBg('color')">帶入背景色</button>
+      </div>
+    </div>
+    <div class="export-progress" id="exportProgress"></div>
+    <div class="export-actions">
+      <button class="tb-btn" onclick="closeExportPNGModal()">取消</button>
+      <button class="tb-btn primary" onclick="doExportPNG()">下載</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
