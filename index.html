@@ -19,17 +19,17 @@
   --panel-l:220px;--panel-m:420px;
   --topbar:40px;
 }
-html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;font-size:13px;background:var(--bg);color:var(--text)}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;font-size:15px;background:var(--bg);color:var(--text)}
 
 /* ── App shell ── */
 .app{display:flex;flex-direction:column;height:100vh}
 .topbar{height:var(--topbar);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;user-select:none}
-.topbar-brand{font-weight:700;font-size:13px;color:var(--amber);letter-spacing:0.06em}
-.topbar-title{font-size:12px;color:var(--text-2);margin-left:4px}
+.topbar-brand{font-weight:700;font-size:15px;color:var(--amber);letter-spacing:0.06em}
+.topbar-title{font-size:13px;color:var(--text-2);margin-left:4px}
 .topbar-client{margin-left:auto;display:flex;align-items:center;gap:8px}
-.client-badge{background:var(--amber-bg);color:var(--amber-lt);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--amber-dk)}
+.client-badge{background:var(--amber-bg);color:var(--amber-lt);padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;border:1px solid var(--amber-dk)}
 .topbar-actions{display:flex;gap:6px;margin-left:8px}
-.tb-btn{padding:4px 12px;border-radius:4px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:all .15s}
+.tb-btn{padding:4px 12px;border-radius:4px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text);transition:all .15s}
 .tb-btn:hover{border-color:var(--amber);color:var(--amber)}
 .tb-btn.primary{background:var(--amber);color:#fff;border-color:var(--amber)}
 .tb-btn.primary:hover{background:var(--amber-lt)}
@@ -39,7 +39,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 /* ── Panel 1: Navigator ── */
 .panel-nav{width:var(--panel-l);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
 .panel-nav-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
-.nav-tab{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:600;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:0.04em;text-transform:uppercase}
+.nav-tab{flex:1;padding:8px 0;text-align:center;font-size:12px;font-weight:600;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:0.04em;text-transform:uppercase}
 .nav-tab.active{color:var(--amber);border-bottom-color:var(--amber)}
 .nav-content{flex:1;overflow-y:auto;padding:8px 0}
 
@@ -47,11 +47,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 .screen-item{padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;border-left:2px solid transparent;transition:all .12s;border-radius:0}
 .screen-item:hover{background:var(--bg3);color:var(--text-hi)}
 .screen-item.active{background:var(--bg4);border-left-color:var(--amber);color:var(--text-hi)}
-.screen-item .s-num{width:18px;height:18px;border-radius:3px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.screen-item .s-name{font-size:11px;line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.screen-item .s-num{width:18px;height:18px;border-radius:3px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.screen-item .s-name{font-size:12px;line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .screen-item .s-check{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--text-3);flex-shrink:0}
 .screen-item.done .s-check{background:var(--green);border-color:var(--green)}
-.add-screen-btn{margin:8px 12px 4px;padding:6px;border:1.5px dashed var(--border);border-radius:5px;text-align:center;font-size:11px;color:var(--text-3);cursor:pointer;transition:all .15s}
+.add-screen-btn{margin:8px 12px 4px;padding:6px;border:1.5px dashed var(--border);border-radius:5px;text-align:center;font-size:12px;color:var(--text-3);cursor:pointer;transition:all .15s}
 .add-screen-btn:hover{border-color:var(--amber);color:var(--amber)}
 
 /* Layer badge colors */
@@ -63,30 +63,30 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 
 /* Checklist */
 .cl-group{margin-bottom:2px}
-.cl-group-header{padding:6px 12px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px}
+.cl-group-header{padding:6px 12px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px}
 .cl-group-header:hover{color:var(--text-2)}
 .cl-items{padding:0 8px 4px}
 .cl-item{display:flex;align-items:flex-start;gap:7px;padding:5px 4px;border-radius:4px;cursor:pointer}
 .cl-item:hover{background:var(--bg3)}
 .cl-item input[type=checkbox]{accent-color:var(--amber);margin-top:1px;flex-shrink:0;cursor:pointer}
-.cl-item label{font-size:11px;color:var(--text-2);line-height:1.4;cursor:pointer}
+.cl-item label{font-size:12px;color:var(--text-2);line-height:1.4;cursor:pointer}
 .cl-item.checked label{color:var(--text-3);text-decoration:line-through}
 .cl-progress{padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0}
 .cl-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:4px}
 .cl-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .3s}
-.cl-pct{font-size:10px;color:var(--text-3);display:flex;justify-content:space-between;margin-top:3px}
+.cl-pct{font-size:11px;color:var(--text-3);display:flex;justify-content:space-between;margin-top:3px}
 
 /* ── Panel 2: Editor ── */
 .panel-editor{width:var(--panel-m);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
 .editor-header{padding:12px 16px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
 .editor-screen-title{font-size:14px;font-weight:600;color:var(--text-hi);display:flex;align-items:center;gap:8px}
-.editor-layer-badge{padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700}
+.editor-layer-badge{padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700}
 .editor-body{flex:1;overflow-y:auto;padding:16px}
 
 /* Form fields */
 .field{margin-bottom:14px}
-.field label{display:block;font-size:11px;font-weight:600;color:var(--text-2);text-transform:none;letter-spacing:0.02em;margin-bottom:6px}
-.field input,.field textarea,.field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:inherit;font-size:12px;color:var(--text-hi);outline:none;transition:border-color .15s;resize:vertical}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text-2);text-transform:none;letter-spacing:0.02em;margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:inherit;font-size:13px;color:var(--text-hi);outline:none;transition:border-color .15s;resize:vertical}
 .field textarea{min-height:60px;line-height:1.5}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--amber)}
 .field select option{background:var(--bg3)}
@@ -96,7 +96,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 /* Slider */
 .slider-wrap{display:flex;align-items:center;gap:8px}
 .slider-wrap input[type=range]{flex:1;accent-color:var(--amber);cursor:pointer}
-.slider-val{font-size:11px;color:var(--amber);font-weight:600;min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.slider-val{font-size:12px;color:var(--amber);font-weight:600;min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* Layout picker */
 .layout-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
@@ -105,7 +105,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 .lp-opt.active{border-color:var(--amber);background:var(--amber-bg)}
 .lp-thumb{height:32px;display:flex;align-items:center;justify-content:center;gap:3px;margin-bottom:4px}
 .lt-block{background:var(--bg4);border-radius:2px}
-.lp-name{font-size:10px;color:var(--text-3)}
+.lp-name{font-size:11px;color:var(--text-3)}
 .lp-opt.active .lp-name{color:var(--amber-lt)}
 
 /* Color row */
@@ -116,24 +116,25 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 
 /* Align buttons */
 .align-btns{display:flex;gap:4px}
-.align-btn{width:28px;height:24px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:11px;transition:all .12s}
+.align-btn{width:28px;height:24px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:12px;transition:all .12s}
 .align-btn:hover{border-color:var(--border-lt);color:var(--text)}
 .align-btn.active{border-color:var(--amber);background:var(--amber-bg);color:var(--amber-lt)}
 
 /* Section divider in editor */
 .e-section{margin-bottom:4px}
-.e-section-title{font-size:13px;font-weight:700;color:var(--amber-lt);text-transform:none;letter-spacing:0.02em;padding:14px 0 10px;border-top:1px solid var(--border);margin-top:12px;display:flex;align-items:center;gap:8px}
+.e-section-title{font-size:15px;font-weight:700;color:var(--amber-lt);text-transform:none;letter-spacing:0.02em;padding:14px 0 10px;border-top:1px solid var(--border);margin-top:12px;display:flex;align-items:center;gap:8px}
 .e-section-title::before{content:'';width:3px;height:15px;background:var(--amber);border-radius:2px;flex-shrink:0}
 .e-section:first-child .e-section-title{border-top:none;margin-top:0;padding-top:0}
 
 /* ── Panel 3: Preview ── */
 .panel-preview{flex:1;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;min-width:300px}
 .preview-header{height:36px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
-.preview-title{font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
-.preview-size{font-size:10px;color:var(--text-3);margin-left:auto;font-variant-numeric:tabular-nums}
+.preview-title{font-size:12px;color:var(--text-3);font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.preview-size{font-size:11px;color:var(--text-3);margin-left:auto;font-variant-numeric:tabular-nums}
 .preview-nav{display:flex;gap:4px}
-.pnav-btn{padding:2px 8px;border-radius:3px;font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text-2);cursor:pointer;font-family:inherit;transition:all .12s}
+.pnav-btn{padding:2px 8px;border-radius:3px;font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text-2);cursor:pointer;font-family:inherit;transition:all .12s}
 .pnav-btn:hover{border-color:var(--amber);color:var(--amber)}
+.pnav-btn.active{border-color:var(--amber);background:var(--amber);color:#fff}
 .preview-body{flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:20px;position:relative}
 .preview-body.single-mode{align-items:center;overflow:hidden}
 .preview-scroll{display:flex;gap:20px;align-items:center;padding:4px}
@@ -142,12 +143,12 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 
 /* Canvas wrapper */
 .canvas-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:10px}
-.canvas-label{font-size:11px;color:var(--text);text-align:center;font-variant-numeric:tabular-nums;line-height:1.5;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
-.canvas-label .cl-num{color:var(--text-3);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
-.canvas-label .cl-layer{display:inline-block;padding:1px 7px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.04em}
-.canvas-label .cl-name{color:var(--text);font-size:11px}
+.canvas-label{font-size:12px;color:var(--text);text-align:center;font-variant-numeric:tabular-nums;line-height:1.5;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+.canvas-label .cl-num{color:var(--text-3);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.canvas-label .cl-layer{display:inline-block;padding:1px 7px;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.canvas-label .cl-name{color:var(--text);font-size:12px}
 .canvas{position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.5);flex-shrink:0}
-.canvas-inner{width:1080px;height:1080px;position:relative;transform-origin:top left}
+.canvas-inner{position:relative;transform-origin:top left}
 
 /* Vertical mode: label on left, canvases stacked tight */
 .preview-scroll.vertical{gap:0;padding:8px 4px 60px}
@@ -175,8 +176,8 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
   margin:0;
   letter-spacing:-0.02em;
 }
-.preview-scroll.vertical .canvas-label .cl-layer{padding:2px 9px;font-size:10px}
-.preview-scroll.vertical .canvas-label .cl-name{color:var(--text-2);font-size:12px;font-weight:500}
+.preview-scroll.vertical .canvas-label .cl-layer{padding:2px 9px;font-size:11px}
+.preview-scroll.vertical .canvas-label .cl-name{color:var(--text-2);font-size:13px;font-weight:500}
 .preview-scroll.vertical .canvas{box-shadow:none;border:1px solid var(--border)}
 
 /* ── Layout renderers inside canvas ── */
@@ -196,7 +197,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 [data-edit].cv-editing,[data-edit].cv-editing:focus{outline:2px solid var(--amber)!important;outline-offset:6px;background:rgba(255,255,255,0.06);cursor:text}
 [data-edit]:empty::before{content:attr(data-placeholder);opacity:0.28;pointer-events:none;font-style:italic}
 [data-edit]:focus{outline-style:solid}
-.edit-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--amber);color:#fff;font-size:11px;padding:5px 12px;border-radius:20px;font-weight:600;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-family:ui-monospace,monospace;letter-spacing:0.05em}
+.edit-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--amber);color:#fff;font-size:12px;padding:5px 12px;border-radius:20px;font-weight:600;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-family:ui-monospace,monospace;letter-spacing:0.05em}
 .edit-hint.show{opacity:1}
 
 /* Layout-specific styles */
@@ -221,21 +222,21 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 
 /* ── Tooltip ── */
 .tooltip{position:relative}
-.tooltip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:10px;padding:3px 7px;border-radius:3px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:99}
+.tooltip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:11px;padding:3px 7px;border-radius:3px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:99}
 .tooltip:hover::after{opacity:1}
 
 /* ── Dev Mode ── */
-.dev-badge{display:none;align-items:center;gap:5px;padding:3px 8px;background:var(--amber);color:#fff;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:0.06em;font-family:ui-monospace,'SF Mono',Menlo,monospace;margin-left:8px}
+.dev-badge{display:none;align-items:center;gap:5px;padding:3px 8px;background:var(--amber);color:#fff;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:0.06em;font-family:ui-monospace,'SF Mono',Menlo,monospace;margin-left:8px}
 .dev-badge::before{content:'';width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 body.dev-mode .dev-badge{display:inline-flex}
 body.dev-mode [data-dev]{outline:1px dashed rgba(166,138,91,0.35);outline-offset:-1px;position:relative}
 body.dev-mode [data-dev]:hover{outline-color:rgba(166,138,91,1);outline-style:solid;outline-width:1.5px;z-index:5}
-body.dev-mode [data-dev]:hover::before{content:attr(data-dev);position:absolute;top:-18px;left:0;background:var(--amber);color:#fff;font-size:10px;font-family:ui-monospace,'SF Mono',Menlo,monospace;padding:2px 7px;border-radius:3px;white-space:nowrap;z-index:9999;pointer-events:none;font-weight:600;letter-spacing:0.03em;box-shadow:0 2px 4px rgba(0,0,0,0.4)}
-body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;padding:3px 9px;font-weight:700}
+body.dev-mode [data-dev]:hover::before{content:attr(data-dev);position:absolute;top:-18px;left:0;background:var(--amber);color:#fff;font-size:11px;font-family:ui-monospace,'SF Mono',Menlo,monospace;padding:2px 7px;border-radius:3px;white-space:nowrap;z-index:9999;pointer-events:none;font-weight:600;letter-spacing:0.03em;box-shadow:0 2px 4px rgba(0,0,0,0.4)}
+body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:12px;padding:3px 9px;font-weight:700}
 
 /* ── Client Modal ── */
-.client-badge-btn{background:var(--amber-bg);color:var(--amber-lt);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--amber-dk);cursor:pointer;font-family:inherit;transition:all .15s}
+.client-badge-btn{background:var(--amber-bg);color:var(--amber-lt);padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;border:1px solid var(--amber-dk);cursor:pointer;font-family:inherit;transition:all .15s}
 .client-badge-btn:hover{background:var(--amber-dk);border-color:var(--amber-lt)}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:flex;align-items:center;justify-content:center}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:400px;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -249,9 +250,9 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
 .client-item:hover{background:var(--bg3);border-color:var(--border)}
 .client-item.active{background:var(--amber-bg);border-color:var(--amber-dk)}
 .client-info{flex:1;min-width:0}
-.client-name{font-size:13px;font-weight:600;color:var(--text-hi)}
-.client-meta{font-size:11px;color:var(--text-3);margin-top:2px}
-.client-delete{width:24px;height:24px;border-radius:4px;border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;flex-shrink:0}
+.client-name{font-size:15px;font-weight:600;color:var(--text-hi)}
+.client-meta{font-size:12px;color:var(--text-3);margin-top:2px}
+.client-delete{width:24px;height:24px;border-radius:4px;border:none;background:transparent;color:var(--text-3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;flex-shrink:0}
 .client-item:hover .client-delete{opacity:1}
 .client-delete:hover{background:var(--red-bg);color:var(--red)}
 </style>
@@ -298,19 +299,19 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
   <!-- Brief -->
   <div class="nav-content" id="nav-brief" style="display:none" data-dev="nav.brief">
     <div style="padding:12px 12px 8px">
-      <div style="font-size:11px;color:var(--text-3);line-height:1.7;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--text-3);line-height:1.7;margin-bottom:12px">
         先填完策略簡報，再點「生成草稿」。<br>
         填好的文案會自動帶入 5 個分屏。
       </div>
-      <button onclick="generateScreensFromBrief()" class="tb-btn primary" style="width:100%;padding:8px;font-size:12px" data-dev="btn.generate">
+      <button onclick="generateScreensFromBrief()" class="tb-btn primary" style="width:100%;padding:8px;font-size:13px" data-dev="btn.generate">
         生成分屏草稿 →
       </button>
-      <div style="font-size:10px;color:var(--text-3);text-align:center;margin-top:6px">現有分屏將被覆蓋</div>
+      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:6px">現有分屏將被覆蓋</div>
     </div>
   </div>
 
   <div class="cl-progress" data-dev="nav.progress">
-    <div style="font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">SOP 完成度</div>
+    <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">SOP 完成度</div>
     <div class="cl-bar"><div class="cl-fill" id="clFill" style="width:0%"></div></div>
     <div class="cl-pct"><span id="clDone">0</span><span id="clPct">0%</span></div>
   </div>
@@ -385,6 +386,30 @@ body.dev-mode [data-dev-major]:hover::before{background:#E8944A;font-size:11px;p
   </div>
 </div>
 
+<!-- AI Response Paste Modal -->
+<div class="modal-overlay" id="aiResponseModal" style="display:none" onclick="if(event.target===this)closeAIResponseModal()" data-dev="modal.ai-response">
+  <div class="modal" style="width:540px;max-height:80vh" data-dev="modal.ai-response-inner">
+    <div class="modal-header">
+      <span class="modal-title">貼上 AI 回應 (JSON)</span>
+      <button class="modal-close" onclick="closeAIResponseModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px">
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
+        把 ChatGPT/Claude 回的整段 JSON 貼進來。系統會自動補齊樣式預設值。
+      </div>
+      <textarea id="aiResponseInput" placeholder='{"screens":[...]}' style="width:100%;min-height:280px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--text-hi);resize:vertical;line-height:1.5" data-dev="input.ai-response"></textarea>
+      <div id="aiResponseError" style="display:none;font-size:12px;color:var(--red);margin-top:8px"></div>
+    </div>
+    <div class="modal-footer" style="display:flex;gap:8px">
+      <button class="tb-btn" onclick="closeAIResponseModal()" style="flex:1">取消</button>
+      <button class="tb-btn primary" onclick="confirmAIResponse()" style="flex:2">套用草稿（覆蓋現有分屏）</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast (for clipboard copy success) -->
+<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text-hi);color:var(--bg);padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.4)"></div>
+
 <script>
 // ══════════════════════════════════════════════
 //  STATE
@@ -409,8 +434,35 @@ const LAYOUTS = [
 // 版型可調參數預設值（Level 1 參數化）。
 // 沒列在這的版型 = 暫無客製化參數，編輯器不顯示「版面參數」section。
 const LAYOUT_DEFAULTS = {
-  'circle': { itemCount: 6, iconSize: 100, ringRadius: 340, ringStyle: 'dashed' },
+  'circle':      { itemCount: 6, iconSize: 100, ringRadius: 340, ringStyle: 'dashed' },
+  'three-point': { itemCount: 3, iconSize: 120, iconShape: 'circle', gap: 40 },
 };
+
+// 哪些參數是 button 類（變更後要重繪 editor 才能更新 active 樣式）；
+// slider 類不在這裡，避免拖曳時 editor 重建導致 slider 失焦。
+const LAYOUT_BUTTON_PARAMS = ['ringStyle', 'iconShape'];
+
+// update() 的這些 key 改變後需要重繪 editor 才能反映 active 狀態 / badge / dropdown。
+// 不在這裡的 key（例如文字輸入 name/headline/body, slider headlineSize/bodySize）保留原欄位 focus，不重繪。
+const UPDATE_RERENDER_EDITOR_KEYS = new Set([
+  'layout', 'sizePreset', 'layer',
+  'headlineAlign', 'bodyAlign',
+  'headlineColor', 'bodyColor', 'bgColor',
+  'checked',
+]);
+
+// 畫布尺寸預設（依 PressPlay 銷售頁課程：分屏 9:16 為主，主視覺 1:1，廣告平台另計）
+const SIZES = {
+  '9-16':   { w:1080, h:1920, label:'9:16 直式（銷售頁）',  short:'1080×1920' },
+  '1-1':    { w:1080, h:1080, label:'1:1 正方（主視覺/廣告）', short:'1080×1080' },
+  '4-5':    { w:1080, h:1350, label:'4:5（IG 動態）',       short:'1080×1350' },
+  '1.91-1': { w:1200, h:630,  label:'1.91:1（FB 廣告橫式）', short:'1200×630' },
+};
+const DEFAULT_SIZE = '9-16';
+
+function getSize(s){
+  return SIZES[s.sizePreset || DEFAULT_SIZE] || SIZES[DEFAULT_SIZE];
+}
 
 const PALETTE = ['#F5F0E8','#1A1A18','#A68A5B','#4A9EE8','#4CAF7D','#E86B5F','#7B5EA7','#E8C44A','#FFFFFF','#000000'];
 
@@ -596,6 +648,12 @@ function renderEditor(){
     <div class="field" data-dev="field.name"><label>分屏名稱</label>
       <input type="text" value="${esc(s.name)}" oninput="update('name',this.value)">
     </div>
+    <div class="field" data-dev="field.size">
+      <label>畫布尺寸</label>
+      <select onchange="update('sizePreset',this.value)">
+        ${Object.entries(SIZES).map(([k,v])=>`<option value="${k}"${(s.sizePreset||DEFAULT_SIZE)===k?' selected':''}>${v.label}</option>`).join('')}
+      </select>
+    </div>
     <div class="field-row">
       <div class="field" data-dev="field.layer"><label>層級</label>
         <select onchange="update('layer',this.value)">${Object.keys(LAYER_META).map(k=>`<option value="${k}"${s.layer===k?' selected':''}>${k} ${LAYER_META[k].label}</option>`).join('')}</select>
@@ -634,7 +692,7 @@ function renderEditor(){
     <div class="field-row">
       <div class="field" data-dev="field.headline-align"><label>對齊</label>
         <div class="align-btns">
-          ${['left','center','right'].map(a=>`<button class="align-btn${s.headlineAlign===a?' active':''}" onclick="update('headlineAlign','${a}')">${a==='left'?'≡':a==='center'?'≡':'≡'} ${a[0].toUpperCase()}</button>`).join('')}
+          ${['left','center','right'].map(a=>`<button class="align-btn${s.headlineAlign===a?' active':''}" onclick="update('headlineAlign','${a}')">${a[0].toUpperCase()}</button>`).join('')}
         </div>
       </div>
       <div class="field" data-dev="field.headline-color"><label>顏色</label>
@@ -681,7 +739,7 @@ function renderEditor(){
 
     <!-- Done toggle -->
     <div class="field" data-dev="field.done-toggle" style="margin-top:8px">
-      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:12px;color:var(--text);cursor:pointer">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;color:var(--text);cursor:pointer">
         <input type="checkbox" ${s.checked?'checked':''} onchange="update('checked',this.checked)" style="accent-color:var(--green);width:14px;height:14px">
         標記這一屏已完成
       </label>
@@ -734,6 +792,38 @@ function renderLayoutParamsSection(s){
       </div>
     `;
   }
+  if(layout === 'three-point'){
+    return `
+      <div class="e-section" data-dev="section.layout-params"><div class="e-section-title">版面參數</div></div>
+      <div class="field" data-dev="field.layout-itemCount">
+        <label>項目數 <span style="color:var(--amber)">${p.itemCount}</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="2" max="5" value="${p.itemCount}" oninput="updateLayoutParam('itemCount',+this.value)">
+          <span class="slider-val">${p.itemCount}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-iconSize">
+        <label>Icon 大小 <span style="color:var(--amber)">${p.iconSize}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="60" max="180" value="${p.iconSize}" oninput="updateLayoutParam('iconSize',+this.value)">
+          <span class="slider-val">${p.iconSize}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-iconShape">
+        <label>Icon 形狀</label>
+        <div class="align-btns">
+          ${[['circle','圓形'],['square','方形'],['none','無底']].map(([v,label])=>`<button class="align-btn${p.iconShape===v?' active':''}" onclick="updateLayoutParam('iconShape','${v}')">${label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-gap">
+        <label>項目間距 <span style="color:var(--amber)">${p.gap}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="20" max="80" value="${p.gap}" oninput="updateLayoutParam('gap',+this.value)">
+          <span class="slider-val">${p.gap}</span>
+        </div>
+      </div>
+    `;
+  }
   return '';
 }
 
@@ -765,19 +855,32 @@ function renderPreview(){
   scroll.className = state.showAll ? 'preview-scroll vertical' : 'preview-scroll';
   body.className = state.showAll ? 'preview-body' : 'preview-body single-mode';
   scroll.innerHTML = toRender.map(s=>renderCanvas(s)).join('');
+  // 更新 preview 尺寸 label：單屏模式顯示當前 screen 尺寸；全部展開時顯示「混合」（除非全相同）
+  const lbl = document.getElementById('previewSizeLabel');
+  if(lbl){
+    if(state.showAll){
+      const uniq = [...new Set(state.screens.map(s=>s.sizePreset || DEFAULT_SIZE))];
+      lbl.textContent = uniq.length === 1 ? SIZES[uniq[0]].short + ' px' : '混合尺寸';
+    } else {
+      const cur = getCurrent();
+      lbl.textContent = cur ? getSize(cur).short + ' px' : '';
+    }
+  }
   makeTextsDraggable();
   setupCanvasEditing();
 }
 
 function renderCanvas(s){
-  const scale = getScale();
-  const scaled = Math.round(1080 * scale);
+  const sz = getSize(s);
+  const scale = getScale(s);
+  const scaledW = Math.round(sz.w * scale);
+  const scaledH = Math.round(sz.h * scale);
   const m = LAYER_META[s.layer];
   const radius = state.showAll ? 0 : Math.round(12 * scale);
   return `
   <div class="canvas-wrap" data-dev="canvas.wrap[${s.id}]">
-    <div class="canvas" data-dev="canvas[${s.id}]" style="width:${scaled}px;height:${scaled}px;border-radius:${radius}px">
-      <div class="canvas-inner layout-${s.layout}" id="cv-${s.id}" style="transform:scale(${scale});background:${s.bgColor}" data-dev="canvas.inner[${s.id}]">
+    <div class="canvas" data-dev="canvas[${s.id}]" style="width:${scaledW}px;height:${scaledH}px;border-radius:${radius}px">
+      <div class="canvas-inner layout-${s.layout}" id="cv-${s.id}" style="width:${sz.w}px;height:${sz.h}px;transform:scale(${scale});background:${s.bgColor}" data-dev="canvas.inner[${s.id}]">
         ${renderCanvasContent(s)}
       </div>
     </div>
@@ -785,6 +888,7 @@ function renderCanvas(s){
       <span class="cl-num">${String(s.id).padStart(2,'0')} / ${String(state.screens.length).padStart(2,'0')}</span>
       <span class="cl-layer ${m.cls}">${s.layer} ${m.label}</span>
       <span class="cl-name">${esc(s.name)}</span>
+      <span style="color:var(--text-3);font-size:11px">· ${sz.short}</span>
     </div>
   </div>`;
 }
@@ -802,7 +906,7 @@ function renderCanvasContent(s){
 
 function renderSingle(s){
   return `
-    <div class="cv-img-hint" data-dev="canvas.image-hint" style="font-size:${Math.round(28*getScale()*getScale())}px">${esc(s.imageHint)}</div>
+    <div class="cv-img-hint" data-dev="canvas.image-hint" style="font-size:${Math.round(28*getScale(s)*getScale(s))}px">${esc(s.imageHint)}</div>
     <div class="cv-text-block layout-single" data-dev="canvas.text-block"
       style="inset:0;position:absolute;display:flex;flex-direction:column;justify-content:center;align-items:${s.headlineAlign==='left'?'flex-start':s.headlineAlign==='right'?'flex-end':'center'};text-align:${s.headlineAlign};padding:80px">
       <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor};white-space:pre-line">${esc(s.headline)}</div>
@@ -820,15 +924,38 @@ function renderLeftRight(s){
 }
 
 function renderThreePoint(s){
-  const items = s.items.length ? s.items : [{icon:'○',title:'特色一',desc:'描述文字'},{icon:'○',title:'特色二',desc:'描述文字'},{icon:'○',title:'特色三',desc:'描述文字'}];
+  const p = getLayoutParams(s);
+  const itemCount = p.itemCount;
+  const iconSize = p.iconSize;
+  const iconShape = p.iconShape;
+  const gap = p.gap;
+
+  // 補滿 itemCount 個 slot
+  const items = [];
+  for(let i = 0; i < itemCount; i++){
+    items.push(s.items[i] || {icon:'○', title:`特色 ${i+1}`, desc:'描述文字'});
+  }
+
+  // icon 容器樣式
+  // - circle / square: 容器寬高 = iconSize, emoji = iconSize * 0.43
+  // - none: 沒容器，emoji 字體直接吃 iconSize（視覺寬度近似）
+  let iconContainerStyle;
+  if(iconShape === 'none'){
+    iconContainerStyle = `font-size:${iconSize}px;line-height:1;flex-shrink:0`;
+  } else {
+    const iconFs = Math.max(20, Math.round(iconSize * 0.43));
+    const radius = iconShape === 'square' ? '16px' : '50%';
+    iconContainerStyle = `width:${iconSize}px;height:${iconSize}px;border-radius:${radius};background:${s.accentColor}22;display:flex;align-items:center;justify-content:center;font-size:${iconFs}px;flex-shrink:0`;
+  }
+
   return `
     <div data-dev="canvas.headline-area" style="position:absolute;top:80px;left:80px;right:80px;text-align:${s.headlineAlign}">
       <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor}">${esc(s.headline)}</div>
     </div>
-    <div data-dev="canvas.items-grid" style="position:absolute;top:260px;bottom:80px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px">
-      ${items.slice(0,3).map((item,i)=>`
+    <div data-dev="canvas.items-grid" style="position:absolute;top:260px;bottom:80px;left:60px;right:60px;display:grid;grid-template-columns:repeat(${itemCount},1fr);gap:${gap}px">
+      ${items.map((item,i)=>`
         <div data-dev="canvas.item[${i}]" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px">
-          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="width:120px;height:120px;border-radius:50%;background:${s.accentColor}22;display:flex;align-items:center;justify-content:center;font-size:52px;flex-shrink:0">${esc(item.icon)}</div>
+          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="${iconContainerStyle}">${esc(item.icon)}</div>
           <div>
             <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="小標題" style="font-size:${Math.round(s.bodySize*1.2)}px;font-weight:700;color:${s.headlineColor};margin-bottom:16px">${esc(item.title)}</div>
             <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="描述文字" style="font-size:${Math.round(s.bodySize*0.85)}px;color:${s.bodyColor};line-height:1.6">${esc(item.desc)}</div>
@@ -917,18 +1044,20 @@ function renderGridLayout(s){
 }
 
 // ── Scale calculation ──
-function getScale(){
+// 接收 screen 參數以取得實際尺寸；不同 screen 可有不同 sizePreset，各自算 scale
+function getScale(s){
+  const sz = s ? getSize(s) : SIZES[DEFAULT_SIZE];
   const previewW = document.querySelector('.panel-preview')?.offsetWidth || 600;
   const previewH = document.querySelector('.panel-preview')?.offsetHeight || 700;
   if(state.showAll){
     // 直向堆疊：以寬度為主，留 scrollbar + padding 空間
     const maxW = previewW - 60;
-    return Math.min(maxW/1080, 0.55);
+    return Math.min(maxW/sz.w, 0.55);
   }
   // 單屏模式：寬高都要塞進去
   const maxW = previewW - 60;
   const maxH = previewH - 80;
-  return Math.min(maxW/1080, maxH/1080, 0.5);
+  return Math.min(maxW/sz.w, maxH/sz.h, 0.5);
 }
 
 // ── Draggable text (basic) ──
@@ -1105,8 +1234,9 @@ function update(key, val){
   s[key] = val;
   renderScreenList();
   renderPreview();
-  // partial re-render for sliders (avoid full editor re-render which loses focus)
-  if(key==='layout') { renderEditor(); renderPreview(); }
+  // button / select / swatch 類 key：重繪 editor 才能更新 active 樣式 / dropdown / badge
+  // 文字 input / slider 不在列表內，避免重建 DOM 丟焦點
+  if(UPDATE_RERENDER_EDITOR_KEYS.has(key)) renderEditor();
   autoSave();
 }
 
@@ -1118,8 +1248,8 @@ function updateLayoutParam(key, val){
   if(!s.layoutParams[s.layout]) s.layoutParams[s.layout] = {};
   s.layoutParams[s.layout][key] = val;
   renderPreview();
-  // ringStyle 是 button group，要重繪才會更新 active 樣式
-  if(key === 'ringStyle') renderEditor();
+  // button 類參數需重繪 editor 來更新 active 樣式
+  if(LAYOUT_BUTTON_PARAMS.includes(key)) renderEditor();
   autoSave();
 }
 
@@ -1181,7 +1311,10 @@ function previewNext(){
 function toggleAllScreens(){
   state.showAll=!state.showAll;
   const btn = document.getElementById('toggleAllBtn');
-  if(btn) btn.textContent = state.showAll ? '返回單屏' : '全部展開';
+  if(btn){
+    btn.textContent = state.showAll ? '返回單屏' : '全部展開';
+    btn.classList.toggle('active', state.showAll);
+  }
   renderPreview();
 }
 
@@ -1255,7 +1388,7 @@ function addBriefL3Item(){
 function renderBriefEditor(){
   const b = state.brief || emptyBrief();
   const badge = document.getElementById('editorLayerBadge');
-  if(badge){ badge.textContent = 'BRIEF'; badge.className = 'editor-layer-badge'; badge.style.cssText='background:#444;color:#aaa;font-size:10px'; }
+  if(badge){ badge.textContent = 'BRIEF'; badge.className = 'editor-layer-badge'; badge.style.cssText='background:var(--bg4);color:var(--text-2);font-size:11px'; }
   const nameEl = document.getElementById('editorScreenName');
   if(nameEl) nameEl.textContent = state.client + ' — 策略簡報';
 
@@ -1369,14 +1502,252 @@ function renderBriefEditor(){
     </div>
 
     <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-      <button onclick="generateScreensFromBrief()" class="tb-btn primary" style="width:100%;padding:10px;font-size:13px" data-dev="btn.generate-editor">
+      <button onclick="generateScreensFromBrief()" class="tb-btn primary" style="width:100%;padding:10px;font-size:15px" data-dev="btn.generate-editor">
         生成分屏草稿 →
       </button>
-      <div style="font-size:11px;color:var(--text-3);text-align:center;margin-top:8px">
-        自動產生 5 個分屏，帶入你填的文案，現有分屏將被覆蓋。
+      <div style="font-size:12px;color:var(--text-3);text-align:center;margin-top:8px">
+        直接用 Brief 內容自動產生 5 屏（不經 AI），現有分屏將被覆蓋。
+      </div>
+    </div>
+
+    <div style="margin-top:14px;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px" data-dev="ai-collab">
+      <div style="font-size:13px;font-weight:700;color:var(--text-hi);margin-bottom:6px">🤝 AI 協作</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px">
+        <b style="color:var(--text)">用 ChatGPT</b>：① 複製 → 貼 ChatGPT → ③ JSON 回貼<br>
+        <b style="color:var(--text)">用 Claude</b>（含 Claude in Chrome）：② 複製啟動詞 → 貼 Claude chat
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="copyAIPrompt()" class="tb-btn" style="flex:1;padding:8px;font-size:12px" data-dev="btn.copy-ai-prompt">
+          ① ChatGPT 提示
+        </button>
+        <button onclick="copyClaudePrompt()" class="tb-btn" style="flex:1;padding:8px;font-size:12px" data-dev="btn.copy-claude-prompt">
+          ② Claude 啟動
+        </button>
+        <button onclick="openAIResponseModal()" class="tb-btn" style="flex:1;padding:8px;font-size:12px" data-dev="btn.paste-ai-response">
+          ③ 貼上回應
+        </button>
       </div>
     </div>
   `;
+}
+
+// ══════════════════════════════════════════════
+//  AI 協作（A 方案：複製 prompt → AI 處理 → 貼回）
+// ══════════════════════════════════════════════
+function buildAIPrompt(){
+  const b = state.brief || {};
+  const c = state.client || '客戶';
+  const p = state.product || '商品';
+
+  const l3List = (b.l3Items || [])
+    .filter(i => i && (i.title || i.desc))
+    .map((i, idx) => `  ${idx+1}. ${i.title || '(無標題)'}：${i.desc || '(無描述)'}`)
+    .join('\n') || '  （未填）';
+
+  return `# 任務：協助生成銷售頁分屏草稿（Kiwa Agency）
+
+## 你的角色
+你是 Kiwa 行銷代理商的文案夥伴，專長台灣中小品牌銷售頁文案。
+語氣特色：直接、有溫度、不誇張、避免 AI 慣用詞（delve / crucial / robust 等）。
+
+## 銷售頁 5 屏黃金架構
+- L1 版頭：主視覺 + 一句特色（10 字內）
+- L2 訴求：建立關聯/喚起渴望（不要列功能特色）
+- L3 商品：3-5 個賣點，每個有 icon/標題/描述
+- L4 信任：認證數據 / KOL推薦 / 素人見證
+- L5 收單：限時優惠 + 行動指令
+
+## 可用版型（layout id）
+- single: 純文字+背景圖（適合 L1/L2/L5）
+- left-right: 左右分割（左文右圖或反之）
+- three-point: 三點橫排（icon+title+desc）
+- four-split: 四分割卡片
+- circle: 圓形排列（icon 圍中心標題）
+- grid: 2×2 卡片（適合 L4 心得截圖風）
+
+## 客戶 Brief
+- 客戶：${c}
+- 商品：${p}
+- 目標受眾：${b.persona || '(未填)'}
+- 廣告入口：${b.trafficSource || '(未填)'}
+- 轉換目標：${b.conversionGoal || '(未填)'}
+
+L1 類型：${b.l1Type || 'visual'}
+  標題：${b.l1Headline || '(未填)'}
+  副標：${b.l1SubHead || '(未填)'}
+  圖片需求：${b.l1ImageHint || '(未填)'}
+
+L2 類型：${b.l2Type || 'scene'}
+  標題：${b.l2Headline || '(未填)'}
+  內文：${b.l2Copy || '(未填)'}
+  圖片需求：${b.l2ImageHint || '(未填)'}
+
+L3 商品特色：
+${l3List}
+
+L4 類型：${b.l4Type || 'cert'}
+  標題：${b.l4Headline || '(未填)'}
+  內文：${b.l4Copy || '(未填)'}
+
+L5 收單：
+  優惠：${b.l5Offer || '(未填)'}
+  售價：${b.l5Price || '(未填)'}
+  原價：${b.l5OrigPrice || '(未填)'}
+  圖片需求：${b.l5ImageHint || '(未填)'}
+
+## 任務
+依 Brief 產出 5 屏文案。要求：
+1. 保留客戶核心訊息，但用台灣口語優化
+2. L1 標題 10 字內，副標可長
+3. L2 用情境法/心理渴望/點問題，不要列功能
+4. L3 每個賣點：title 8 字內、desc 30 字內、icon 用合適 emoji
+5. L4 認證列 1-2 個重點數據；心得用「素人語氣」+ 短評
+6. L5 標題吸睛，body 含原價+售價+限量
+7. imageHint 用一句話描述「圖片應該長什麼樣」（給攝影師看的 brief）
+8. 依各層內容自由選 layout（不一定都用 single）
+
+## 回傳格式
+純 JSON（不要 markdown code fence、不要任何解釋）：
+
+{
+  "screens": [
+    {"id":1, "layer":"L1", "name":"版頭", "layout":"single", "headline":"...", "body":"...", "imageHint":"...", "items":[]},
+    {"id":2, "layer":"L2", "name":"訴求", "layout":"single", "headline":"...", "body":"...", "imageHint":"...", "items":[]},
+    {"id":3, "layer":"L3", "name":"商品特色", "layout":"three-point", "headline":"...", "body":"", "imageHint":"...", "items":[
+      {"icon":"🌿", "title":"...", "desc":"..."},
+      {"icon":"🌿", "title":"...", "desc":"..."},
+      {"icon":"🌿", "title":"...", "desc":"..."}
+    ]},
+    {"id":4, "layer":"L4", "name":"信任", "layout":"single", "headline":"...", "body":"...", "imageHint":"...", "items":[]},
+    {"id":5, "layer":"L5", "name":"收單", "layout":"single", "headline":"...", "body":"...", "imageHint":"...", "items":[]}
+  ]
+}
+
+只回 JSON，不要其他文字。`;
+}
+
+async function copyAIPrompt(){
+  const prompt = buildAIPrompt();
+  try {
+    await navigator.clipboard.writeText(prompt);
+    showToast('已複製提示詞（' + prompt.length + ' 字元）');
+  } catch(e){
+    // fallback：開 textarea 讓用戶手動 copy
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('已複製提示詞'); }
+    catch(_){ alert('複製失敗，請手動選取：\n\n' + prompt.slice(0,100) + '...'); }
+    document.body.removeChild(ta);
+  }
+}
+
+// C 方案：給有 Claude in Chrome 的夥伴。複製啟動指令，貼到 Claude chat 後 Claude 直接讀工具+寫回。
+async function copyClaudePrompt(){
+  const prompt = `請打開「銷售頁設計工具 — Kiwa Agency」這個 chrome tab，做以下事情：
+
+1. 用 javascript_tool 讀取 state.brief 跟 state.client、state.product
+2. 根據 Brief 內容產出 5 屏銷售頁文案
+   要求：
+   - 台灣口語、有溫度、不誇張
+   - 避免 AI 慣用詞（delve / crucial / robust / nuanced / leverage / utilize）
+   - L1 標題 10 字內、L2 用情境法/心理渴望/點問題（不列功能）
+   - L3 每賣點：title 8 字內、desc 30 字內、icon 用合適 emoji
+   - L4 認證列重點數據；心得用素人語氣
+   - L5 標題吸睛、body 含原價+售價+限量
+   - 依各層適合度選 layout（single / left-right / three-point / four-split / circle / grid）
+   - imageHint 一句話描述「圖片應該長什麼樣」
+3. 在對話中先讓我看你的草稿（不要直接寫入工具）
+4. 我確認/調整後，呼叫 window.mergeAIResponse({screens: [...]}) 寫入工具
+5. 完成後提示我切到分屏 tab 看結果`;
+  try {
+    await navigator.clipboard.writeText(prompt);
+    showToast('已複製 Claude 啟動指令（貼到 Claude chat）');
+  } catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('已複製 Claude 啟動指令'); }
+    catch(_){ alert('複製失敗，請手動選取'); }
+    document.body.removeChild(ta);
+  }
+}
+
+function openAIResponseModal(){
+  document.getElementById('aiResponseInput').value = '';
+  document.getElementById('aiResponseError').style.display = 'none';
+  document.getElementById('aiResponseModal').style.display = 'flex';
+  setTimeout(()=>document.getElementById('aiResponseInput').focus(), 50);
+}
+function closeAIResponseModal(){
+  document.getElementById('aiResponseModal').style.display = 'none';
+}
+function confirmAIResponse(){
+  const txt = document.getElementById('aiResponseInput').value.trim();
+  const errEl = document.getElementById('aiResponseError');
+  if(!txt){ errEl.textContent = '請貼上 JSON'; errEl.style.display='block'; return; }
+  // 容錯：剝掉 markdown code fence
+  const cleaned = txt.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '');
+  let data;
+  try { data = JSON.parse(cleaned); }
+  catch(e){ errEl.textContent = 'JSON 解析失敗：' + e.message; errEl.style.display='block'; return; }
+  if(!data.screens || !Array.isArray(data.screens) || !data.screens.length){
+    errEl.textContent = '格式錯誤：缺少 screens 陣列或為空'; errEl.style.display='block'; return;
+  }
+  mergeAIResponse(data);
+  closeAIResponseModal();
+  showToast('已套用 ' + data.screens.length + ' 屏 AI 草稿');
+}
+
+// 把 AI 回的 partial schema 補齊樣式 default
+function mergeAIResponse(data){
+  const screens = data.screens.map((aiScreen, i) => {
+    const id = aiScreen.id || (i+1);
+    const layer = aiScreen.layer || ['L1','L2','L3','L4','L5'][i] || 'L3';
+    const isDark = layer === 'L2' || layer === 'L5';
+    return {
+      id,
+      layer,
+      name: aiScreen.name || (LAYER_META[layer]?.label || layer),
+      layout: aiScreen.layout || 'single',
+      headline: aiScreen.headline || '',
+      headlineSize: layer === 'L1' ? 88 : layer === 'L5' ? 80 : layer === 'L2' ? 72 : 60,
+      headlineAlign: 'center',
+      headlineColor: isDark ? '#FFFFFF' : '#1A1A18',
+      body: aiScreen.body || '',
+      bodySize: 26,
+      bodyAlign: 'center',
+      bodyColor: isDark ? 'rgba(255,255,255,0.85)' : '#5A5A52',
+      subtext: '',
+      subtextSize: 18,
+      subtextColor: '#8A8A7E',
+      bgColor: isDark ? '#2C3A2A' : (layer === 'L1' ? '#F5F0E8' : '#FAFAF7'),
+      accentColor: '#A68A5B',
+      imageHint: aiScreen.imageHint || '',
+      items: Array.isArray(aiScreen.items) ? aiScreen.items : [],
+      checked: false,
+      sizePreset: aiScreen.sizePreset || DEFAULT_SIZE,
+    };
+  });
+  state.screens = screens;
+  state.currentId = screens[0]?.id || 1;
+  autoSave();
+  switchNavTab('screens');
+  renderScreenList();
+  selectScreen(state.currentId);
+}
+
+// 顯示 toast 訊息
+let _toastTimer;
+function showToast(msg){
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>{ el.style.opacity = '0'; }, 2200);
 }
 
 function generateScreensFromBrief(){
@@ -1690,7 +2061,7 @@ function renderClientModal(){
   if(!list) return;
   const index = getClientIndex().slice().sort((a,b)=>b.lastModified-a.lastModified);
   if(!index.length){
-    list.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--text-3);font-size:12px">尚無儲存的客戶草稿</div>';
+    list.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--text-3);font-size:13px">尚無儲存的客戶草稿</div>';
     return;
   }
   list.innerHTML = index.map(c=>{
@@ -1699,7 +2070,7 @@ function renderClientModal(){
     const dateStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     return `<div class="client-item${active?' active':''}" onclick="loadClient('${esc(c.name)}')">
       <div class="client-info">
-        <div class="client-name">${esc(c.name)}${c.product ? ` <span style="font-weight:400;color:var(--text-2);font-size:11px">— ${esc(c.product)}</span>` : ''}</div>
+        <div class="client-name">${esc(c.name)}${c.product ? ` <span style="font-weight:400;color:var(--text-2);font-size:12px">— ${esc(c.product)}</span>` : ''}</div>
         <div class="client-meta">${c.screenCount} 個分屏 · ${dateStr}</div>
       </div>
       <button class="client-delete" onclick="event.stopPropagation();deleteClient('${esc(c.name)}')" title="刪除草稿">✕</button>
