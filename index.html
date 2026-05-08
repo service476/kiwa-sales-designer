@@ -66,11 +66,13 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 .cl-group-header{padding:6px 12px;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px}
 .cl-group-header:hover{color:var(--text-2)}
 .cl-items{padding:0 8px 4px}
-.cl-item{display:flex;align-items:flex-start;gap:7px;padding:5px 4px;border-radius:4px;cursor:pointer}
+.cl-item{display:flex;align-items:flex-start;gap:8px;padding:5px 6px;border-radius:4px;cursor:pointer;transition:background .12s}
 .cl-item:hover{background:var(--bg3)}
-.cl-item input[type=checkbox]{accent-color:var(--amber);margin-top:1px;flex-shrink:0;cursor:pointer}
-.cl-item label{font-size:12px;color:var(--text-2);line-height:1.4;cursor:pointer}
-.cl-item.checked label{color:var(--text-3);text-decoration:line-through}
+.cl-check{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border-lt);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:transparent;transition:all .15s;line-height:1}
+.cl-item:hover .cl-check{border-color:var(--amber)}
+.cl-item.checked .cl-check{background:var(--amber);border-color:var(--amber);color:#1A1A18}
+.cl-label{font-size:12px;color:var(--text);line-height:1.4}
+.cl-item.checked .cl-label{color:var(--text-3);text-decoration:line-through}
 .cl-progress{padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0}
 .cl-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:4px}
 .cl-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .3s}
@@ -89,6 +91,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 .field input,.field textarea,.field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:inherit;font-size:13px;color:var(--text-hi);outline:none;transition:border-color .15s;resize:vertical}
 .field textarea{min-height:60px;line-height:1.5}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--amber)}
+.field select{-webkit-appearance:none;appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
 .field select option{background:var(--bg3)}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
@@ -115,10 +118,16 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 .color-input{width:32px;height:24px;border-radius:4px;cursor:pointer;border:1px solid var(--border);padding:0;background:transparent}
 
 /* Align buttons */
-.align-btns{display:flex;gap:4px}
-.align-btn{width:28px;height:24px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:12px;transition:all .12s}
+.align-btns{display:flex;gap:4px;flex-wrap:wrap}
+.align-btn{min-width:28px;padding:0 8px;height:24px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:12px;transition:all .12s;white-space:nowrap}
 .align-btn:hover{border-color:var(--border-lt);color:var(--text)}
 .align-btn.active{border-color:var(--amber);background:var(--amber-bg);color:var(--amber-lt)}
+
+/* Done toggle (custom, no native checkbox) */
+.done-btn{display:flex;align-items:center;gap:9px;width:100%;padding:8px 12px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-family:inherit;font-size:13px;color:var(--text-2);transition:all .15s;text-align:left}
+.done-btn:hover{border-color:var(--border-lt);color:var(--text)}
+.done-btn.done{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.done-icon{width:16px;height:16px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .15s}
 
 /* Section divider in editor */
 .e-section{margin-bottom:4px}
@@ -436,11 +445,15 @@ const LAYOUTS = [
 const LAYOUT_DEFAULTS = {
   'circle':      { itemCount: 6, iconSize: 100, ringRadius: 340, ringStyle: 'dashed' },
   'three-point': { itemCount: 3, iconSize: 120, iconShape: 'circle', gap: 40 },
+  'four-split':  { columns: 2, cardRadius: 20, cardPadding: 44, iconSize: 40 },
+  'grid':        { columns: 2, rows: 2, cardRadius: 16 },
+  'left-right':  { textRatio: 50, textPosition: 'left' },
+  'single':      { padding: 80, maxWidth: 0 },
 };
 
 // 哪些參數是 button 類（變更後要重繪 editor 才能更新 active 樣式）；
 // slider 類不在這裡，避免拖曳時 editor 重建導致 slider 失焦。
-const LAYOUT_BUTTON_PARAMS = ['ringStyle', 'iconShape'];
+const LAYOUT_BUTTON_PARAMS = ['ringStyle', 'iconShape', 'columns', 'rows', 'textPosition', 'textRatio', 'maxWidth'];
 
 // update() 的這些 key 改變後需要重繪 editor 才能反映 active 狀態 / badge / dropdown。
 // 不在這裡的 key（例如文字輸入 name/headline/body, slider headlineSize/bodySize）保留原欄位 focus，不重繪。
@@ -739,10 +752,10 @@ function renderEditor(){
 
     <!-- Done toggle -->
     <div class="field" data-dev="field.done-toggle" style="margin-top:8px">
-      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;color:var(--text);cursor:pointer">
-        <input type="checkbox" ${s.checked?'checked':''} onchange="update('checked',this.checked)" style="accent-color:var(--green);width:14px;height:14px">
-        標記這一屏已完成
-      </label>
+      <button class="done-btn${s.checked?' done':''}" onclick="update('checked',${!s.checked})">
+        <span class="done-icon">${s.checked?'✓':''}</span>
+        <span>${s.checked?'這一屏已完成':'標記這一屏為完成'}</span>
+      </button>
     </div>
   `;
   // attach slider live update for size labels
@@ -820,6 +833,98 @@ function renderLayoutParamsSection(s){
         <div class="slider-wrap">
           <input type="range" min="20" max="80" value="${p.gap}" oninput="updateLayoutParam('gap',+this.value)">
           <span class="slider-val">${p.gap}</span>
+        </div>
+      </div>
+    `;
+  }
+  if(layout === 'four-split'){
+    return `
+      <div class="e-section" data-dev="section.layout-params"><div class="e-section-title">版面參數</div></div>
+      <div class="field" data-dev="field.layout-columns">
+        <label>排列方式</label>
+        <div class="align-btns">
+          ${[[1,'1×4 直列'],[2,'2×2 網格']].map(([v,label])=>`<button class="align-btn${p.columns===v?' active':''}" onclick="updateLayoutParam('columns',${v})">${label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-cardRadius">
+        <label>卡片圓角 <span style="color:var(--amber)">${p.cardRadius}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="0" max="32" value="${p.cardRadius}" oninput="updateLayoutParam('cardRadius',+this.value)">
+          <span class="slider-val">${p.cardRadius}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-cardPadding">
+        <label>卡片內距 <span style="color:var(--amber)">${p.cardPadding}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="24" max="60" value="${p.cardPadding}" oninput="updateLayoutParam('cardPadding',+this.value)">
+          <span class="slider-val">${p.cardPadding}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-iconSize">
+        <label>Icon 大小 <span style="color:var(--amber)">${p.iconSize}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="24" max="80" value="${p.iconSize}" oninput="updateLayoutParam('iconSize',+this.value)">
+          <span class="slider-val">${p.iconSize}</span>
+        </div>
+      </div>
+    `;
+  }
+  if(layout === 'grid'){
+    return `
+      <div class="e-section" data-dev="section.layout-params"><div class="e-section-title">版面參數</div></div>
+      <div class="field" data-dev="field.layout-columns">
+        <label>欄數</label>
+        <div class="align-btns">
+          ${[2,3].map(v=>`<button class="align-btn${p.columns===v?' active':''}" onclick="updateLayoutParam('columns',${v})">${v} 欄</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-rows">
+        <label>列數</label>
+        <div class="align-btns">
+          ${[2,3].map(v=>`<button class="align-btn${p.rows===v?' active':''}" onclick="updateLayoutParam('rows',${v})">${v} 列</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-cardRadius">
+        <label>卡片圓角 <span style="color:var(--amber)">${p.cardRadius}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="0" max="32" value="${p.cardRadius}" oninput="updateLayoutParam('cardRadius',+this.value)">
+          <span class="slider-val">${p.cardRadius}</span>
+        </div>
+      </div>
+    `;
+  }
+  if(layout === 'left-right'){
+    return `
+      <div class="e-section" data-dev="section.layout-params"><div class="e-section-title">版面參數</div></div>
+      <div class="field" data-dev="field.layout-textPosition">
+        <label>文字位置</label>
+        <div class="align-btns">
+          ${[['left','文字在左'],['right','文字在右']].map(([v,label])=>`<button class="align-btn${p.textPosition===v?' active':''}" onclick="updateLayoutParam('textPosition','${v}')">${label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-textRatio">
+        <label>文字寬度比例 <span style="color:var(--amber)">${p.textRatio}%</span></label>
+        <div class="align-btns">
+          ${[30,40,50,60,70].map(v=>`<button class="align-btn${p.textRatio===v?' active':''}" onclick="updateLayoutParam('textRatio',${v})">${v}%</button>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+  if(layout === 'single'){
+    const widthLabel = p.maxWidth === 0 ? '全寬' : `${p.maxWidth}px`;
+    return `
+      <div class="e-section" data-dev="section.layout-params"><div class="e-section-title">版面參數</div></div>
+      <div class="field" data-dev="field.layout-padding">
+        <label>內距 <span style="color:var(--amber)">${p.padding}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="40" max="120" value="${p.padding}" oninput="updateLayoutParam('padding',+this.value)">
+          <span class="slider-val">${p.padding}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-maxWidth">
+        <label>文字最大寬度 <span style="color:var(--amber)">${widthLabel}</span></label>
+        <div class="align-btns">
+          ${[[0,'全寬'],[600,'600'],[700,'700'],[800,'800'],[900,'900']].map(([v,label])=>`<button class="align-btn${p.maxWidth===v?' active':''}" onclick="updateLayoutParam('maxWidth',${v})">${label}</button>`).join('')}
         </div>
       </div>
     `;
@@ -905,19 +1010,31 @@ function renderCanvasContent(s){
 }
 
 function renderSingle(s){
+  const p = getLayoutParams(s);
+  const padding = p.padding;
+  const maxWidth = p.maxWidth;     // 0 = 全寬
+  const wrapStyle = maxWidth > 0 ? `max-width:${maxWidth}px;width:100%` : '';
   return `
     <div class="cv-img-hint" data-dev="canvas.image-hint" style="font-size:${Math.round(28*getScale(s)*getScale(s))}px">${esc(s.imageHint)}</div>
     <div class="cv-text-block layout-single" data-dev="canvas.text-block"
-      style="inset:0;position:absolute;display:flex;flex-direction:column;justify-content:center;align-items:${s.headlineAlign==='left'?'flex-start':s.headlineAlign==='right'?'flex-end':'center'};text-align:${s.headlineAlign};padding:80px">
-      <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor};white-space:pre-line">${esc(s.headline)}</div>
-      <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};text-align:${s.bodyAlign};white-space:pre-line">${esc(s.body)}</div>
+      style="inset:0;position:absolute;display:flex;flex-direction:column;justify-content:center;align-items:${s.headlineAlign==='left'?'flex-start':s.headlineAlign==='right'?'flex-end':'center'};text-align:${s.headlineAlign};padding:${padding}px">
+      <div data-dev="canvas.text-inner" style="${wrapStyle}">
+        <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor};white-space:pre-line">${esc(s.headline)}</div>
+        <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};text-align:${s.bodyAlign};white-space:pre-line">${esc(s.body)}</div>
+      </div>
     </div>`;
 }
 
 function renderLeftRight(s){
+  const p = getLayoutParams(s);
+  const textRatio = p.textRatio;        // 30/40/50/60/70
+  const textPosition = p.textPosition;  // 'left' | 'right'
+  const imgRatio = 100 - textRatio;
+  const textSide = textPosition === 'left' ? 'left:0' : 'right:0';
+  const imgSide  = textPosition === 'left' ? 'right:0' : 'left:0';
   return `
-    <div class="cv-img-area cv-img-hint" data-dev="canvas.image-area" style="right:0;top:0;bottom:0;width:50%;position:absolute;font-size:20px;display:flex;align-items:center;justify-content:center;padding:40px;text-align:center">${esc(s.imageHint)}</div>
-    <div data-dev="canvas.text-block" style="position:absolute;left:0;top:0;bottom:0;width:50%;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;text-align:${s.headlineAlign}">
+    <div class="cv-img-area cv-img-hint" data-dev="canvas.image-area" style="${imgSide};top:0;bottom:0;width:${imgRatio}%;position:absolute;font-size:20px;display:flex;align-items:center;justify-content:center;padding:40px;text-align:center">${esc(s.imageHint)}</div>
+    <div data-dev="canvas.text-block" style="position:absolute;${textSide};top:0;bottom:0;width:${textRatio}%;display:flex;flex-direction:column;justify-content:center;padding:80px 60px;text-align:${s.headlineAlign}">
       <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${s.headlineSize}px;color:${s.headlineColor};white-space:pre-line">${esc(s.headline)}</div>
       <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};white-space:pre-line">${esc(s.body)}</div>
     </div>`;
@@ -965,15 +1082,24 @@ function renderThreePoint(s){
 }
 
 function renderFourSplit(s){
+  const p = getLayoutParams(s);
+  const columns = p.columns;       // 1 = 1×4 直列, 2 = 2×2 網格
+  const cardRadius = p.cardRadius;
+  const cardPadding = p.cardPadding;
+  const iconSize = p.iconSize;
+
   const items = s.items.length ? s.items : Array(4).fill(0).map((_,i)=>({icon:'',title:`重點 ${i+1}`,desc:'描述文字'}));
+  // grid 結構：1×4 → 1 col / 4 rows；2×2 → 2 col / 2 rows
+  const gridCols = columns === 1 ? '1fr' : '1fr 1fr';
+  const gridRows = columns === 1 ? '1fr 1fr 1fr 1fr' : '1fr 1fr';
   return `
     <div data-dev="canvas.headline-area" style="position:absolute;top:60px;left:80px;right:80px;text-align:${s.headlineAlign}">
       <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${Math.round(s.headlineSize*0.75)}px;color:${s.headlineColor}">${esc(s.headline)}</div>
     </div>
-    <div data-dev="canvas.items-grid" style="position:absolute;top:200px;bottom:60px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:30px">
+    <div data-dev="canvas.items-grid" style="position:absolute;top:200px;bottom:60px;left:60px;right:60px;display:grid;grid-template-columns:${gridCols};grid-template-rows:${gridRows};gap:30px">
       ${items.slice(0,4).map((item,i)=>`
-        <div data-dev="canvas.item[${i}]" style="border-radius:20px;background:${s.accentColor}18;border:1px solid ${s.accentColor}40;padding:50px 40px;display:flex;flex-direction:column;gap:14px">
-          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="font-size:40px;min-height:1em">${esc(item.icon)}</div>
+        <div data-dev="canvas.item[${i}]" style="border-radius:${cardRadius}px;background:${s.accentColor}18;border:1px solid ${s.accentColor}40;padding:${cardPadding}px;display:flex;flex-direction:column;gap:14px">
+          <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="font-size:${iconSize}px;min-height:1em">${esc(item.icon)}</div>
           <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="小標題" style="font-size:${Math.round(s.bodySize*1.1)}px;font-weight:700;color:${s.headlineColor}">${esc(item.title)}</div>
           <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="描述文字" style="font-size:${Math.round(s.bodySize*0.82)}px;color:${s.bodyColor};line-height:1.55">${esc(item.desc)}</div>
         </div>`).join('')}
@@ -1028,14 +1154,25 @@ function renderCircle(s){
 }
 
 function renderGridLayout(s){
-  const items = s.items.length ? s.items : Array(4).fill(0).map((_,i)=>({icon:'⭐⭐⭐⭐⭐',title:`心得 ${i+1}`,desc:'使用心得文字'}));
+  const p = getLayoutParams(s);
+  const columns = p.columns;
+  const rows = p.rows;
+  const cardRadius = p.cardRadius;
+  const total = columns * rows;
+
+  // 補滿 columns × rows 個卡片
+  const items = [];
+  for(let i = 0; i < total; i++){
+    items.push(s.items[i] || {icon:'⭐⭐⭐⭐⭐', title:`心得 ${i+1}`, desc:'使用心得文字'});
+  }
+  const gridCols = Array(columns).fill('1fr').join(' ');
   return `
     <div data-dev="canvas.headline-area" style="position:absolute;top:70px;left:80px;right:80px;text-align:${s.headlineAlign}">
       <div class="cv-headline" data-dev="canvas.headline" data-edit="headline" data-screen-id="${s.id}" data-placeholder="雙擊新增大標" style="font-size:${Math.round(s.headlineSize*0.78)}px;color:${s.headlineColor}">${esc(s.headline)}</div>
     </div>
-    <div data-dev="canvas.items-grid" style="position:absolute;top:220px;bottom:60px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
-      ${items.slice(0,4).map((item,i)=>`
-        <div data-dev="canvas.item[${i}]" style="border-radius:16px;background:${s.accentColor}14;border:1px solid ${s.accentColor}30;padding:44px 40px;display:flex;flex-direction:column;gap:12px">
+    <div data-dev="canvas.items-grid" style="position:absolute;top:220px;bottom:60px;left:60px;right:60px;display:grid;grid-template-columns:${gridCols};gap:24px">
+      ${items.map((item,i)=>`
+        <div data-dev="canvas.item[${i}]" style="border-radius:${cardRadius}px;background:${s.accentColor}14;border:1px solid ${s.accentColor}30;padding:44px 40px;display:flex;flex-direction:column;gap:12px">
           <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="⭐" style="font-size:22px;min-height:1em">${esc(item.icon)}</div>
           <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="標題" style="font-size:${Math.round(s.bodySize)}px;font-weight:700;color:${s.headlineColor}">${esc(item.title)}</div>
           <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="心得內容" style="font-size:${Math.round(s.bodySize*0.8)}px;color:${s.bodyColor};line-height:1.55">${esc(item.desc)}</div>
@@ -1191,9 +1328,9 @@ function renderChecklist(){
       <div class="cl-group-header">${group.group}</div>
       <div class="cl-items">
         ${group.items.map(item=>`
-          <div class="cl-item${item.checked?' checked':''}" id="cli-${item.id}">
-            <input type="checkbox" id="${item.id}" ${item.checked?'checked':''} onchange="toggleCL('${item.id}')">
-            <label for="${item.id}">${item.text}</label>
+          <div class="cl-item${item.checked?' checked':''}" id="cli-${item.id}" onclick="toggleCL('${item.id}')">
+            <div class="cl-check">${item.checked?'✓':''}</div>
+            <span class="cl-label">${item.text}</span>
           </div>`).join('')}
       </div>
     </div>`).join('');
