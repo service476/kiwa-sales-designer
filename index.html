@@ -406,6 +406,12 @@ const LAYOUTS = [
   {id:'grid',      name:'表格化'},
 ];
 
+// 版型可調參數預設值（Level 1 參數化）。
+// 沒列在這的版型 = 暫無客製化參數，編輯器不顯示「版面參數」section。
+const LAYOUT_DEFAULTS = {
+  'circle': { itemCount: 6, iconSize: 100, ringRadius: 340, ringStyle: 'dashed' },
+};
+
 const PALETTE = ['#F5F0E8','#1A1A18','#A68A5B','#4A9EE8','#4CAF7D','#E86B5F','#7B5EA7','#E8C44A','#FFFFFF','#000000'];
 
 let state = {
@@ -611,6 +617,8 @@ function renderEditor(){
       </div>`).join('')}
     </div>
 
+    ${renderLayoutParamsSection(s)}
+
     <!-- Headline -->
     <div class="e-section" data-dev="section.headline"><div class="e-section-title">主標文案</div></div>
     <div class="field" data-dev="field.headline-text"><label>大標（可換行）</label>
@@ -687,6 +695,46 @@ function renderEditor(){
       if(next && next.classList.contains('slider-val')) next.textContent = sl.value;
     });
   });
+}
+
+// 版面參數編輯器（依 layout 動態顯示）
+function renderLayoutParamsSection(s){
+  const layout = s.layout;
+  if(!LAYOUT_DEFAULTS[layout]) return '';
+  const p = getLayoutParams(s);
+  if(layout === 'circle'){
+    return `
+      <div class="e-section" data-dev="section.layout-params"><div class="e-section-title">版面參數</div></div>
+      <div class="field" data-dev="field.layout-itemCount">
+        <label>項目數 <span style="color:var(--amber)">${p.itemCount}</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="3" max="8" value="${p.itemCount}" oninput="updateLayoutParam('itemCount',+this.value)">
+          <span class="slider-val">${p.itemCount}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-iconSize">
+        <label>Icon 大小 <span style="color:var(--amber)">${p.iconSize}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="60" max="160" value="${p.iconSize}" oninput="updateLayoutParam('iconSize',+this.value)">
+          <span class="slider-val">${p.iconSize}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-ringRadius">
+        <label>Ring 半徑 <span style="color:var(--amber)">${p.ringRadius}px</span></label>
+        <div class="slider-wrap">
+          <input type="range" min="240" max="400" value="${p.ringRadius}" oninput="updateLayoutParam('ringRadius',+this.value)">
+          <span class="slider-val">${p.ringRadius}</span>
+        </div>
+      </div>
+      <div class="field" data-dev="field.layout-ringStyle">
+        <label>Ring 樣式</label>
+        <div class="align-btns">
+          ${[['dashed','虛線'],['solid','實線'],['none','無']].map(([v,label])=>`<button class="align-btn${p.ringStyle===v?' active':''}" onclick="updateLayoutParam('ringStyle','${v}')">${label}</button>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+  return '';
 }
 
 function renderItemsEditor(s){
@@ -806,14 +854,28 @@ function renderFourSplit(s){
 }
 
 function renderCircle(s){
-  const items = s.items.length ? s.items : Array(6).fill(0).map((_,i)=>({icon:'○',title:`項目 ${i+1}`,desc:''}));
-  const count = Math.min(items.length, 6);
-  const radius = 340;          // 圓半徑（離中心多遠）
-  const itemSize = 200;        // 每個項目區塊寬度
-  const iconSize = 100;        // 圓形 icon 寬度
+  const p = getLayoutParams(s);
+  const itemCount = p.itemCount;
+  const radius = p.ringRadius;
+  const iconSize = p.iconSize;
+  const ringStyle = p.ringStyle;
+
+  // 補滿 itemCount 個 slot：先用 s.items，不足補預設佔位
+  const items = [];
+  for(let i = 0; i < itemCount; i++){
+    items.push(s.items[i] || {icon:'○', title:`項目 ${i+1}`, desc:''});
+  }
+
+  const itemSize = 200;        // 每個項目區塊寬度（文字寬度）
   const startAngle = -90;      // 從正上方開始（順時針）
-  const headlineFs = Math.min(s.headlineSize, 64);  // 圓中心字體上限避免壓邊
+  const headlineFs = Math.min(s.headlineSize, 64);
   const bodyFs = Math.round(s.bodySize * 0.85);
+  // icon 內字體依 iconSize 等比縮放（基準：100 → 42，ratio 0.42）
+  const iconFs = Math.max(14, Math.round(iconSize * 0.42));
+  // ring 樣式：dashed / solid / none
+  const ringBorder = ringStyle === 'none' ? 'none'
+    : ringStyle === 'solid' ? `1.5px solid ${s.accentColor}55`
+    : `1.5px dashed ${s.accentColor}55`;
 
   return `
     <!-- 中心：標題 -->
@@ -822,14 +884,14 @@ function renderCircle(s){
       <div class="cv-body" data-dev="canvas.body" data-edit="body" data-screen-id="${s.id}" data-placeholder="雙擊新增內文" style="font-size:${s.bodySize}px;color:${s.bodyColor};line-height:1.5">${esc(s.body)}</div>
     </div>
     <!-- 圓形軌跡 -->
-    <div data-dev="canvas.circle-ring" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${radius*2}px;height:${radius*2}px;border-radius:50%;border:1.5px dashed ${s.accentColor}55;z-index:1;pointer-events:none"></div>
+    <div data-dev="canvas.circle-ring" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:${radius*2}px;height:${radius*2}px;border-radius:50%;border:${ringBorder};z-index:1;pointer-events:none"></div>
     <!-- 項目們 -->
-    ${items.slice(0,count).map((item,i)=>{
-      const angle = (startAngle + (360/count) * i) * Math.PI/180;
+    ${items.map((item,i)=>{
+      const angle = (startAngle + (360/itemCount) * i) * Math.PI/180;
       const x = Math.cos(angle) * radius;
       const y = Math.sin(angle) * radius;
       return `<div data-dev="canvas.item[${i}]" style="position:absolute;top:50%;left:50%;width:${itemSize}px;transform:translate(calc(-50% + ${Math.round(x)}px), calc(-50% + ${Math.round(y)}px));display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;z-index:3">
-        <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="width:${iconSize}px;height:${iconSize}px;border-radius:50%;background:${s.accentColor};display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.15)">${esc(item.icon)}</div>
+        <div data-dev="canvas.item-icon[${i}]" data-edit="items.${i}.icon" data-screen-id="${s.id}" data-placeholder="✦" style="width:${iconSize}px;height:${iconSize}px;border-radius:50%;background:${s.accentColor};display:flex;align-items:center;justify-content:center;font-size:${iconFs}px;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.15)">${esc(item.icon)}</div>
         <div>
           <div data-dev="canvas.item-title[${i}]" data-edit="items.${i}.title" data-screen-id="${s.id}" data-placeholder="小標題" style="font-size:${bodyFs}px;font-weight:700;color:${s.headlineColor};line-height:1.3">${esc(item.title)}</div>
           <div data-dev="canvas.item-desc[${i}]" data-edit="items.${i}.desc" data-screen-id="${s.id}" data-placeholder="描述" style="font-size:${Math.round(bodyFs*0.78)}px;color:${s.bodyColor};line-height:1.5;margin-top:6px">${esc(item.desc)}</div>
@@ -1029,6 +1091,14 @@ function updateChecklistProgress(){
 // ── State helpers ──
 function getCurrent(){ return state.screens.find(s=>s.id===state.currentId); }
 
+// 讀目前 screen 在當前版型下的參數（user 值蓋過預設值，沒設過就用預設）
+function getLayoutParams(s){
+  const layout = s.layout;
+  const defaults = LAYOUT_DEFAULTS[layout] || {};
+  const userParams = (s.layoutParams && s.layoutParams[layout]) || {};
+  return { ...defaults, ...userParams };
+}
+
 function update(key, val){
   const s = getCurrent();
   if(!s) return;
@@ -1037,6 +1107,19 @@ function update(key, val){
   renderPreview();
   // partial re-render for sliders (avoid full editor re-render which loses focus)
   if(key==='layout') { renderEditor(); renderPreview(); }
+  autoSave();
+}
+
+// 更新版面參數（不重繪 editor 以免 slider 失焦；button 類型才重繪）
+function updateLayoutParam(key, val){
+  const s = getCurrent();
+  if(!s) return;
+  if(!s.layoutParams) s.layoutParams = {};
+  if(!s.layoutParams[s.layout]) s.layoutParams[s.layout] = {};
+  s.layoutParams[s.layout][key] = val;
+  renderPreview();
+  // ringStyle 是 button group，要重繪才會更新 active 樣式
+  if(key === 'ringStyle') renderEditor();
   autoSave();
 }
 
