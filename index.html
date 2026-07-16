@@ -211,6 +211,10 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important;user-select:none}
 .screen-item.sl-dragging{opacity:.4}
 .screen-item.sl-drop-before{box-shadow:inset 0 3px 0 var(--amber)}
 .screen-item.sl-drop-after{box-shadow:inset 0 -3px 0 var(--amber)}
+/* Phase 3/4：選中框、nudge、空 slot 加元素鈕 */
+.cv-el-selected{outline:2px solid var(--amber)!important;outline-offset:2px;border-radius:2px}
+.cv-slot-empty{display:flex;align-items:center;justify-content:center;min-height:60px;width:100%;border:1.5px dashed rgba(166,138,91,.4);border-radius:8px;color:rgba(166,138,91,.6);font-size:32px;cursor:pointer;transition:all .15s}
+.cv-slot-empty:hover{border-color:var(--amber);color:var(--amber);background:rgba(166,138,91,.06)}
 .cv-el:empty::before{content:attr(data-placeholder);opacity:.3}
 .cv-editing{outline:2px solid var(--amber)!important;outline-offset:2px;border-radius:2px}
 /* v2 元素編輯器（中欄） */
@@ -759,6 +763,7 @@ function reorderScreens(dragId, targetId, after){
   const arr = state.screens;
   const from = arr.findIndex(s=>s.id===dragId);
   if(from < 0) return;
+  pushUndo('reorder');
   const [moved] = arr.splice(from, 1);
   let to = arr.findIndex(s=>s.id===targetId);
   if(to < 0){ arr.splice(from, 0, moved); return; }  // target 不見了，還原
@@ -1058,6 +1063,7 @@ let _elSeq = 0;
 function nextElId(sid){ return 'el-'+sid+'-n'+(_elSeq++); }
 function addElement(slotId, type){
   const s = getCurrent(); if(!s) return;
+  pushUndo('add');
   s.elements = s.elements || [];
   const inSlot = s.elements.filter(e=>e.slot===slotId);
   const maxOrder = inSlot.reduce((m,e)=>Math.max(m, e.order||0), -10);
@@ -1069,18 +1075,21 @@ function addElement(slotId, type){
 function updateElement(elId, key, val, rerender){
   const s = getCurrent(); if(!s) return;
   const el = (s.elements||[]).find(e=>e.id===elId); if(!el) return;
+  pushUndo('elupd-'+elId+'-'+key);
   el[key] = val;
   if(rerender) renderEditor();
   renderPreview(); autoSave();
 }
 function removeElement(elId){
   const s = getCurrent(); if(!s) return;
+  pushUndo('remove');
   s.elements = (s.elements||[]).filter(e=>e.id!==elId);
   renderEditor(); renderPreview(); autoSave();
 }
 function moveElement(elId, dir){
   const s = getCurrent(); if(!s) return;
   const el = (s.elements||[]).find(e=>e.id===elId); if(!el) return;
+  pushUndo('move');
   const sib = (s.elements||[]).filter(e=>e.slot===el.slot).sort((a,b)=>(a.order||0)-(b.order||0));
   const idx = sib.findIndex(e=>e.id===elId);
   const swap = sib[idx+dir];
@@ -1091,6 +1100,7 @@ function moveElement(elId, dir){
 function changeElementType(elId, type){
   const s = getCurrent(); if(!s) return;
   const el = (s.elements||[]).find(e=>e.id===elId); if(!el) return;
+  pushUndo('type');
   el.type = type;
   if(type==='accent' && !el.variant) el.variant = 'plain';
   else if(type!=='accent') delete el.variant;
@@ -1189,13 +1199,17 @@ function renderElement(s, el, opts){
   const common = `data-edit="${el.id}" data-screen-id="${s.id}" data-eltype="${el.type}" data-dev="canvas.el[${el.id}]" data-placeholder="${d.label}"`;
   // accent + variant:chip → 圓底 icon 容器（three-point / circle 專用，樣式由 slot 傳入）
   if(el.type === 'accent' && el.variant === 'chip' && opts.chipStyle){
-    return `<div class="cv-el cv-el-chip" ${common} style="width:100%;text-align:${align};line-height:0;${nudge}"><span style="${opts.chipStyle}">${esc(el.text)}</span></div>`;
+    return `<div class="cv-el cv-el-chip${el.id===selectedElId?' cv-el-selected':''}" ${common} style="width:100%;text-align:${align};line-height:0;${nudge}"><span style="${opts.chipStyle}">${esc(el.text)}</span></div>`;
   }
-  return `<div class="cv-el" ${common} style="width:100%;font-size:${size}px;font-weight:${weight};color:${color};text-align:${align};line-height:${d.lineHeight};letter-spacing:${d.letterSpacing};white-space:pre-line;${nudge}">${esc(el.text)}</div>`;
+  return `<div class="cv-el${el.id===selectedElId?' cv-el-selected':''}" ${common} style="width:100%;font-size:${size}px;font-weight:${weight};color:${color};text-align:${align};line-height:${d.lineHeight};letter-spacing:${d.letterSpacing};white-space:pre-line;${nudge}">${esc(el.text)}</div>`;
 }
 // 取某 slot 的元素（依 order 排序）並渲染
 function renderElementsIn(s, slotId, opts){
   const els = (s.elements||[]).filter(e=>e.slot===slotId).sort((a,b)=>(a.order||0)-(b.order||0));
+  if(els.length === 0){
+    // 空 slot：畫布上直接顯示「＋」加元素（export 時隱藏）
+    return `<div class="cv-slot-empty" onclick="event.stopPropagation();addElement('${slotId}','body')" title="加入元素">＋</div>`;
+  }
   return els.map(el=>renderElement(s, el, opts)).join('');
 }
 
@@ -1515,9 +1529,10 @@ function onDragUp(e){
   ds.el.classList.remove('cv-el-dragging');
   ds.el.style.pointerEvents = '';
   ds.el.style.transform = '';
-  if(!ds.dragging) return;              // 未過門檻：什麼都不做，交還原生 click/dblclick
+  if(!ds.dragging){ selectElement(ds.elId); return; }   // 純點擊：選中該元素（方向鍵可微調）
   e.preventDefault(); e.stopPropagation();
   if(ds.drop){
+    pushUndo('drop');
     applyDrop(ds.screenId, ds.elId, ds.drop.slot, ds.drop.index);
     renderOneCanvas(ds.screenId);
     renderEditor();
@@ -1678,7 +1693,7 @@ function saveCanvasEdit(screenId, elId, value){
   if(!screen) return;
   // elId = 元素 id（雙擊畫布文字直接改該元素 text）
   const el = (screen.elements||[]).find(e=>e.id === elId);
-  if(el) el.text = value;
+  if(el){ pushUndo('edit-'+elId); el.text = value; }
   renderEditor();   // sync 中欄元素編輯器
   renderPreview();  // re-render preview
   autoSave();
@@ -1745,6 +1760,7 @@ function getLayoutParams(s){
 function update(key, val){
   const s = getCurrent();
   if(!s) return;
+  pushUndo('upd-'+key);
   s[key] = val;
   if(key === 'layout') reflowElementsToSlots(s);   // 切版型：消失 slot 的元素回收到 primary
   renderScreenList();
@@ -1759,6 +1775,7 @@ function update(key, val){
 function updateLayoutParam(key, val){
   const s = getCurrent();
   if(!s) return;
+  pushUndo('lp-'+key);
   if(!s.layoutParams) s.layoutParams = {};
   if(!s.layoutParams[s.layout]) s.layoutParams[s.layout] = {};
   s.layoutParams[s.layout][key] = val;
@@ -1787,6 +1804,7 @@ function addItem(){
 }
 
 function addScreen(){
+  pushUndo('addScreen');
   const ids = state.screens.map(s=>s.id);
   const newId = Math.max(...ids)+1;
   const sc = {
@@ -1911,7 +1929,7 @@ async function exportScreenToPNG(s){
   // 隱藏 imageHint 佔位文字（僅供設計師參考，不輸出）
   wrap.appendChild(inner);
   document.body.appendChild(wrap);
-  inner.querySelectorAll('.cv-img-hint').forEach(el=>el.style.opacity='0');
+  inner.querySelectorAll('.cv-img-hint,.cv-slot-empty').forEach(el=>el.style.opacity='0');
 
   try {
     const canvas = await html2canvas(inner, {
@@ -1946,10 +1964,79 @@ function toHex(c){
 // ── Window resize ──
 window.addEventListener('resize', ()=>{ renderPreview(); });
 
+// ══════════════════════════════════════════════
+//  UNDO（快照堆疊）
+// ══════════════════════════════════════════════
+var undoStack = [];
+var _undoTag = null, _undoTime = 0;
+function pushUndo(tag){
+  const now = Date.now();
+  if(tag && tag===_undoTag && (now-_undoTime)<1500){ _undoTime=now; return; }  // coalesce 連續同類（打字/拖 slider）
+  undoStack.push(JSON.stringify(state.screens));
+  if(undoStack.length>60) undoStack.shift();
+  _undoTag = tag || null; _undoTime = now;
+}
+function undo(){
+  if(!undoStack.length){ showToast('沒有可以復原的動作'); return; }
+  try {
+    state.screens = JSON.parse(undoStack.pop());
+    if(!state.screens.find(s=>s.id===state.currentId)) state.currentId = state.screens[0] && state.screens[0].id;
+    selectedElId = null;
+    renderScreenList(); renderEditor(); renderPreview(); autoSave();
+    showToast('已復原');
+  } catch(err){ console.error('undo failed', err); }
+  _undoTag = null;
+}
+
+// ══════════════════════════════════════════════
+//  元素選中 + nudge 方向鍵微調
+// ══════════════════════════════════════════════
+var selectedElId = null;
+function selectElement(elId){
+  selectedElId = elId;
+  document.querySelectorAll('.cv-el-selected').forEach(el=>el.classList.remove('cv-el-selected'));
+  if(elId){
+    const node = document.querySelector(`.cv-el[data-edit="${elId}"]`);
+    if(node) node.classList.add('cv-el-selected');
+  }
+}
+function clearSelection(){ selectElement(null); }
+function nudgeSelected(dx, dy){
+  if(!selectedElId) return;
+  const s = getCurrent(); if(!s) return;
+  const el = (s.elements||[]).find(e=>e.id===selectedElId); if(!el) return;
+  pushUndo('nudge-'+selectedElId);
+  el.nudge = el.nudge || {x:0, y:0};
+  el.nudge.x = (el.nudge.x||0) + dx;
+  el.nudge.y = (el.nudge.y||0) + dy;
+  renderOneCanvas(s.id);
+  selectElement(selectedElId);   // 重繪後重新標記選中框
+  autoSave();
+}
+
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', e=>{
+  const tag = (e.target && e.target.tagName) || '';
+  const inField = /^(INPUT|TEXTAREA|SELECT)$/.test(tag) || (e.target && e.target.isContentEditable);
+  // Undo（Cmd/Ctrl+Z），編輯中或輸入框內交給瀏覽器原生文字 undo
+  if((e.metaKey||e.ctrlKey) && (e.key==='z'||e.key==='Z') && !e.shiftKey){
+    if(inField || editingEl) return;
+    e.preventDefault(); undo(); return;
+  }
+  // 方向鍵 nudge（有選中元素、非編輯、無 Cmd/Ctrl）
+  if(selectedElId && !editingEl && !inField && !e.metaKey && !e.ctrlKey && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+    e.preventDefault();
+    const step = e.shiftKey ? 10 : 1;
+    const dx = e.key==='ArrowLeft' ? -step : e.key==='ArrowRight' ? step : 0;
+    const dy = e.key==='ArrowUp' ? -step : e.key==='ArrowDown' ? step : 0;
+    nudgeSelected(dx, dy); return;
+  }
+  // Esc 取消選中
+  if(e.key==='Escape' && selectedElId && !editingEl){ clearSelection(); return; }
+  // 切上/下屏
   if((e.metaKey||e.ctrlKey)&&e.key==='ArrowLeft'){ e.preventDefault(); previewPrev(); }
   if((e.metaKey||e.ctrlKey)&&e.key==='ArrowRight'){ e.preventDefault(); previewNext(); }
+  // 開發者模式
   if(e.altKey && (e.key==='d' || e.key==='D' || e.code==='KeyD')){
     e.preventDefault();
     document.body.classList.toggle('dev-mode');
