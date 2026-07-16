@@ -206,6 +206,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;f
 .cv-el-dragging{opacity:.9;box-shadow:0 8px 24px rgba(0,0,0,.28);z-index:100;position:relative;cursor:grabbing}
 body.is-dragging,body.is-dragging *{cursor:grabbing!important;user-select:none}
 .cv-slot-drop{background:rgba(166,138,91,.10);outline:1.5px dashed var(--amber);outline-offset:-2px;border-radius:4px}
+/* 分屏列表拖曳排序 */
+.screen-item[draggable=true]{cursor:grab}
+.screen-item.sl-dragging{opacity:.4}
+.screen-item.sl-drop-before{box-shadow:inset 0 3px 0 var(--amber)}
+.screen-item.sl-drop-after{box-shadow:inset 0 -3px 0 var(--amber)}
 .cv-el:empty::before{content:attr(data-placeholder);opacity:.3}
 .cv-editing{outline:2px solid var(--amber)!important;outline-offset:2px;border-radius:2px}
 /* v2 元素編輯器（中欄） */
@@ -687,12 +692,13 @@ function renderScreenList(){
     const m = LAYER_META[s.layer];
     const active = s.id === state.currentId ? 'active' : '';
     const done = s.checked ? 'done' : '';
-    return `<div class="screen-item ${active} ${done}" onclick="selectScreen(${s.id})" data-id="${s.id}" data-dev="screen.item[${s.id}]">
+    return `<div class="screen-item ${active} ${done}" draggable="true" onclick="selectScreen(${s.id})" data-id="${s.id}" data-dev="screen.item[${s.id}]">
       <div class="s-num ${m.cls}">${s.layer}</div>
       <div class="s-name">${s.name}</div>
       <div class="s-check"></div>
     </div>`;
   }).join('');
+  setupScreenListDrag();
 }
 
 // ── Select screen ──
@@ -701,6 +707,66 @@ function selectScreen(id){
   renderScreenList();
   renderEditor();
   renderPreview();
+}
+
+// ── 分屏列表上下拖曳排序（HTML5 DnD，委派綁一次）──
+let dragScreenId = null;
+function setupScreenListDrag(){
+  const list = document.getElementById('screenList');
+  if(!list || list.dataset.dragBound) return;
+  list.dataset.dragBound = '1';
+  list.addEventListener('dragstart', e=>{
+    const item = e.target.closest('.screen-item');
+    if(!item){ return; }
+    dragScreenId = parseInt(item.dataset.id, 10);
+    item.classList.add('sl-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', String(dragScreenId)); } catch(_){}
+  });
+  list.addEventListener('dragover', e=>{
+    if(dragScreenId == null) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const item = e.target.closest('.screen-item');
+    clearScreenDropMark();
+    if(!item || parseInt(item.dataset.id,10) === dragScreenId) return;
+    const r = item.getBoundingClientRect();
+    const after = (e.clientY - r.top) > r.height/2;
+    item.classList.add(after ? 'sl-drop-after' : 'sl-drop-before');
+  });
+  list.addEventListener('drop', e=>{
+    e.preventDefault();
+    const item = e.target.closest('.screen-item');
+    clearScreenDropMark();
+    if(!item || dragScreenId == null) return;
+    const targetId = parseInt(item.dataset.id, 10);
+    if(targetId !== dragScreenId){
+      const r = item.getBoundingClientRect();
+      const after = (e.clientY - r.top) > r.height/2;
+      reorderScreens(dragScreenId, targetId, after);
+    }
+  });
+  list.addEventListener('dragend', ()=>{
+    document.querySelectorAll('.screen-item.sl-dragging').forEach(el=>el.classList.remove('sl-dragging'));
+    clearScreenDropMark();
+    dragScreenId = null;
+  });
+}
+function clearScreenDropMark(){
+  document.querySelectorAll('.sl-drop-before,.sl-drop-after').forEach(el=>el.classList.remove('sl-drop-before','sl-drop-after'));
+}
+function reorderScreens(dragId, targetId, after){
+  const arr = state.screens;
+  const from = arr.findIndex(s=>s.id===dragId);
+  if(from < 0) return;
+  const [moved] = arr.splice(from, 1);
+  let to = arr.findIndex(s=>s.id===targetId);
+  if(to < 0){ arr.splice(from, 0, moved); return; }  // target 不見了，還原
+  if(after) to += 1;
+  arr.splice(to, 0, moved);
+  renderScreenList();
+  if(state.showAll) renderPreview();   // 全部展開模式順序變要重繪
+  autoSave();
 }
 
 // ── Editor ──
